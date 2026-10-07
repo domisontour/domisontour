@@ -19,6 +19,7 @@ const names = visitedCountryCodes(trips).map((c) => countryName(c, lang)).sort((
     <p class="lead">{tr.map_lead}</p>
     <div class="legend">
       <span><i class="k sea"></i>{lang === 'de' ? 'Besuchter Ort' : 'Place visited'}</span>
+      <span><i class="k plan"></i>{lang === 'de' ? 'Geplanter Ort' : 'Planned place'}</span>
       <span><i class="k rose"></i>{lang === 'de' ? 'Tagebucheintrag' : 'Diary entry'}</span>
 
     </div>
@@ -30,6 +31,6 @@ const names = visitedCountryCodes(trips).map((c) => countryName(c, lang)).sort((
   .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0 0 18px; font-size: 0.92rem; color: var(--ink-soft); }
   .legend span { display: inline-flex; align-items: center; gap: 8px; }
   .k { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
-  .sea { background: var(--sea); } .rose { background: #c98f84; } .land { background: var(--blush); border-radius: 3px; }
+  .sea { background: var(--sea); } .plan { background: var(--linen); border: 2px dashed #8a9468; } .rose { background: #c98f84; } .land { background: var(--blush); border-radius: 3px; }
   .list { font-size: 1.9rem; color: var(--sea); margin-top: 24px; }
 </style>

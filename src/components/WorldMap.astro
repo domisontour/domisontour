@@ -37,14 +37,17 @@ const de = lang === 'de';
       <p class="pct-label">{de ? 'der Welt bereist' : 'of the world explored'}</p>
       <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax={s.countriesTotal} aria-valuenow={s.countries} aria-label={de ? 'Bereiste Länder' : 'Countries visited'}>
         <i style={`width:${Math.max(pct, 1.5)}%`}></i>
+        {s.plannedCountries > 0 && <b style={`width:${(s.plannedCountries / s.countriesTotal) * 100}%`}></b>}
       </div>
       <dl>
         <div><dt>{de ? 'Länder' : 'Countries'}</dt><dd>{s.countries} <span>/ {s.countriesTotal}</span></dd></div>
         {s.states > 0 && <div><dt>{de ? 'US-Staaten' : 'US states'}</dt><dd>{s.states} <span>/ {s.statesTotal}</span></dd></div>}
+        {s.plannedCountries > 0 && <div class="plan"><dt>{de ? 'Geplant' : 'Planned'}</dt><dd>+{s.plannedCountries} <span>{de ? (s.plannedCountries === 1 ? 'Land' : 'Länder') : (s.plannedCountries === 1 ? 'country' : 'countries')}</span></dd></div>}
       </dl>
       <ul class="key">
         <li><i class="k visited"></i>{de ? 'Bereist' : 'Visited'}</li>
-        <li><i class="k open"></i>{de ? 'Noch offen' : 'Still to explore'}</li>
+        {(s.plannedCountries > 0 || s.plannedStates > 0) && <li><i class="k planned"></i>{de ? 'Geplant' : 'Planned'}</li>}
+        <li><i class="k open"></i>{de ? 'Offen' : 'Open'}</li>
       </ul>
     </div>
   )}
@@ -73,17 +76,21 @@ const de = lang === 'de';
   .pct { margin: 0; font-size: 2.6rem; font-weight: 750; letter-spacing: -0.04em; line-height: 1; }
   .pct-label { margin: 2px 0 10px; font-family: var(--hand); font-size: 1.45rem; line-height: 1; color: var(--sea); }
   .bar { height: 6px; border-radius: 99px; background: #e6dccb; overflow: hidden; }
+  .bar { display: flex; }
   .bar i { display: block; height: 100%; background: var(--sea); border-radius: 99px; }
+  .bar b { display: block; height: 100%; background: var(--sage); border-radius: 0 99px 99px 0; margin-left: 2px; }
+  .status dl .plan dd { color: #6d7650; }
   .status dl { margin: 12px 0 0; display: grid; gap: 4px; }
   .status dl div { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.88rem; }
   .status dt { color: var(--ink-soft); }
   .status dd { margin: 0; font-weight: 700; }
   .status dd span { font-weight: 400; color: var(--ink-soft); }
-  .key { list-style: none; margin: 10px 0 0; padding: 10px 0 0; border-top: 1px dashed var(--line); display: flex; gap: 14px; font-size: 0.8rem; color: var(--ink-soft); }
+  .key { list-style: none; margin: 10px 0 0; padding: 10px 0 0; border-top: 1px dashed var(--line); display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.8rem; color: var(--ink-soft); }
   .key li { display: inline-flex; align-items: center; gap: 6px; }
   .k { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
   .k.visited { background: var(--blush); }
   .k.open { background: #f4eee2; border: 1px solid #cdbfa6; }
+  .k.planned { background: var(--sage); }
 
   @media (max-width: 600px) {
     .world-map { height: min(var(--h), 108vw); }
@@ -118,8 +125,8 @@ const de = lang === 'de';
   import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
   import { feature } from 'topojson-client';
 
-  type Pin = { lat: number; lng: number; title: string; sub: string; href: string; image: string; kind: 'stop' | 'entry' | 'place' };
-  type Data = { countries: string[]; states: string[]; pins: Pin[]; routes: { coords: [number, number][] }[] };
+  type Pin = { lat: number; lng: number; title: string; sub: string; href: string; image: string; kind: 'stop' | 'entry' | 'place' | 'planned' };
+  type Data = { countries: string[]; states: string[]; plannedCountries: string[]; plannedStates: string[]; pins: Pin[]; routes: { coords: [number, number][] }[] };
 
   let libPromise: Promise<typeof import('maplibre-gl')> | null = null;
   const loadLib = () =>
@@ -171,9 +178,11 @@ const de = lang === 'de';
   }
 
   const css = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  const PIN_COLORS: Record<Pin['kind'], string> = { stop: '#2c5f5d', place: '#2c5f5d', entry: '#c98f84' };
+  const PIN_COLORS: Record<Pin['kind'], string> = { stop: '#2c5f5d', place: '#2c5f5d', entry: '#c98f84', planned: '#8a9468' };
 
   function pinSvg(kind: Pin['kind']) {
+    if (kind === 'planned')
+      return `<svg viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1C6 1 1.5 5.4 1.5 11.2 1.5 19 12 31 12 31s10.5-12 10.5-19.8C22.5 5.4 18 1 12 1z" fill="#f8f3ea" stroke="${PIN_COLORS.planned}" stroke-width="2" stroke-dasharray="3 2"/><circle cx="12" cy="11" r="3.5" fill="${PIN_COLORS.planned}"/></svg>`;
     return `<svg viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1C6 1 1.5 5.4 1.5 11.2 1.5 19 12 31 12 31s10.5-12 10.5-19.8C22.5 5.4 18 1 12 1z" fill="${PIN_COLORS[kind]}" stroke="#f8f3ea" stroke-width="1.5"/><circle cx="12" cy="11" r="4" fill="#f8f3ea"/></svg>`;
   }
   const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
@@ -188,7 +197,8 @@ const de = lang === 'de';
     const worldZoom = Math.log2(Math.min(w, h) / 165);
 
     // Wenn Bundesstaaten erfasst sind, werden die USA über die Staaten eingefärbt
-    const countryFill = data.states.length ? data.countries.filter((c) => c !== '840') : data.countries;
+    const usByStates = data.states.length > 0 || data.plannedStates.length > 0;
+    const countryFill = usByStates ? data.countries.filter((c) => c !== '840') : data.countries;
 
     const map = new maplibregl.Map({
       container: el,
@@ -237,6 +247,20 @@ const de = lang === 'de';
             paint: { 'fill-color': css('--blush'), 'fill-opacity': 0.85 },
           },
           {
+            id: 'planned',
+            type: 'fill',
+            source: 'countries',
+            filter: ['in', ['get', 'iso'], ['literal', data.plannedCountries]],
+            paint: { 'fill-color': css('--sage'), 'fill-opacity': 0.75 },
+          },
+          {
+            id: 'states-planned',
+            type: 'fill',
+            source: 'states',
+            filter: ['in', ['get', 'fips'], ['literal', data.plannedStates]],
+            paint: { 'fill-color': css('--sage'), 'fill-opacity': 0.75 },
+          },
+          {
             id: 'states-visited',
             type: 'fill',
             source: 'states',
@@ -248,7 +272,7 @@ const de = lang === 'de';
             id: 'state-borders',
             type: 'line',
             source: 'states',
-            layout: { visibility: data.states.length ? 'visible' : 'none' },
+            layout: { visibility: usByStates ? 'visible' : 'none' },
             paint: { 'line-color': '#cdbfa6', 'line-width': 0.5 },
           },
           {
@@ -267,12 +291,12 @@ const de = lang === 'de';
     for (const p of data.pins) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = p.kind === 'place' ? 'dot-pin small' : 'dot-pin';
+      btn.className = p.kind === 'place' || p.kind === 'planned' ? 'dot-pin small' : 'dot-pin';
       btn.setAttribute('aria-label', p.title);
       btn.innerHTML = pinSvg(p.kind);
       const img = p.image ? `<div class="pimg"><img src="${esc(p.image)}" alt="" loading="lazy"></div>` : '';
       const link = p.href ? `<a href="${esc(p.href)}">${esc(el.dataset.open || 'Open')}</a>` : '';
-      const popup = new maplibregl.Popup({ offset: p.kind === 'place' ? 22 : 30, closeButton: false, maxWidth: '220px' }).setHTML(
+      const popup = new maplibregl.Popup({ offset: p.kind === 'place' || p.kind === 'planned' ? 22 : 30, closeButton: false, maxWidth: '220px' }).setHTML(
         `<div class="pop">${img}<p class="pt">${esc(p.title)}</p>${p.sub ? `<p class="ps">${esc(p.sub)}</p>` : ''}${link}</div>`,
       );
       new maplibregl.Marker({ element: btn, anchor: 'bottom', opacityWhenCovered: '0' }).setLngLat([p.lng, p.lat]).setPopup(popup).addTo(map);

@@ -332,3 +332,35 @@ content:
             type: number
             required: true
             description: Zweite Zahl aus Google Maps.
+      - name: planned_countries
+        label: Geplante Länder (zweistelliger Code)
+        type: string
+        list: true
+        description: "Werden grün markiert und zählen noch nicht zum Prozentwert. Nach der Reise oben bei den bereisten Ländern eintragen und hier löschen."
+      - name: planned_us_states
+        label: Geplante US-Bundesstaaten (Kürzel)
+        type: string
+        list: true
+      - name: planned_places
+        label: Geplante Orte (Pins)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.name_de}"
+        fields:
+          - name: name_de
+            label: Ort (Deutsch)
+            type: string
+            required: true
+          - name: name_en
+            label: Ort (Englisch)
+            type: string
+          - name: lat
+            label: Breitengrad
+            type: number
+            required: true
+          - name: lng
+            label: Längengrad
+            type: number
+            required: true

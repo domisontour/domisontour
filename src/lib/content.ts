@@ -87,7 +87,7 @@ export interface MapPin {
   sub: string;
   href: string;
   image: string;
-  kind: 'stop' | 'entry' | 'place';
+  kind: 'stop' | 'entry' | 'place' | 'planned';
 }
 export interface MapRoute {
   coords: [number, number][];
@@ -95,9 +95,11 @@ export interface MapRoute {
 export interface MapData {
   countries: string[];
   states: string[];
+  plannedCountries: string[];
+  plannedStates: string[];
   pins: MapPin[];
   routes: MapRoute[];
-  stats: { countries: number; countriesTotal: number; states: number; statesTotal: number };
+  stats: { countries: number; countriesTotal: number; states: number; statesTotal: number; plannedCountries: number; plannedStates: number };
 }
 
 /** Alle bereisten Länder (Weltkarte + Reisen), als ISO-Kürzel */
@@ -155,11 +157,34 @@ export function buildMapData(trips: Trip[], entries: Entry[], lang: Lang, opts: 
     }
   }
   const countries = [...countrySet].filter(Boolean);
+  // Geplant: nur, was noch nicht bereist ist
+  const pd = places as any;
+  const plannedCountries = withPlaces
+    ? [...new Set<string>((pd.planned_countries ?? []).map((c: string) => countryNumeric(c.trim())))].filter((c) => c && !countrySet.has(c))
+    : [];
+  const plannedStateCodes = withPlaces
+    ? [...new Set<string>((pd.planned_us_states ?? []).map((c: string) => c.trim().toUpperCase()))].filter((c) => FIPS[c] && c !== 'DC' && !stateCodes.includes(c))
+    : [];
+  if (withPlaces) {
+    for (const p of pd.planned_places ?? []) {
+      if (p.lat == null || p.lng == null) continue;
+      pins.push({ lat: p.lat, lng: p.lng, title: (lang === 'en' && p.name_en) || p.name_de, sub: lang === 'de' ? 'Geplant' : 'Planned', href: '', image: '', kind: 'planned' });
+    }
+  }
   return {
     countries,
     states: stateCodes.map((c) => FIPS[c]),
+    plannedCountries,
+    plannedStates: plannedStateCodes.map((c) => FIPS[c]),
     pins,
     routes,
-    stats: { countries: countries.length, countriesTotal: WORLD_COUNTRIES, states: stateCodes.length, statesTotal: US_STATES },
+    stats: {
+      countries: countries.length,
+      countriesTotal: WORLD_COUNTRIES,
+      states: stateCodes.length,
+      statesTotal: US_STATES,
+      plannedCountries: plannedCountries.length,
+      plannedStates: plannedStateCodes.length,
+    },
   };
 }

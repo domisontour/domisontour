@@ -146,5 +146,41 @@
       "lat": 22.0582,
       "lng": -159.5218
     }
+  ],
+  "planned_countries": [
+    "TH",
+    "NA",
+    "PT",
+    "HU"
+  ],
+  "planned_us_states": [
+    "NY",
+    "FL"
+  ],
+  "planned_places": [
+    {
+      "name_de": "New York",
+      "name_en": "New York",
+      "lat": 40.7128,
+      "lng": -74.006
+    },
+    {
+      "name_de": "Miami",
+      "name_en": "Miami",
+      "lat": 25.7617,
+      "lng": -80.1918
+    },
+    {
+      "name_de": "Lissabon",
+      "name_en": "Lisbon",
+      "lat": 38.7223,
+      "lng": -9.1393
+    },
+    {
+      "name_de": "Budapest",
+      "name_en": "Budapest",
+      "lat": 47.4979,
+      "lng": 19.0402
+    }
   ]
 }
