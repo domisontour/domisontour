@@ -1,0 +1,10 @@
+---
+import DestinationPage from '../../../views/DestinationPage.astro';
+import { getDestinations } from '../../../lib/destinations';
+export async function getStaticPaths() {
+  const all = await getDestinations();
+  return all.map((dest) => ({ params: { slug: dest.slug.en }, props: { dest } }));
+}
+const { dest } = Astro.props;
+---
+<DestinationPage lang="en" dest={dest} />

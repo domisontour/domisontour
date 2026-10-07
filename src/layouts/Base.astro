@@ -3,6 +3,7 @@ import '../styles/global.css';
 import { path, t, type Lang } from '../lib/i18n';
 import { site } from '../lib/content';
 import Logo from '../components/Logo.astro';
+import { destinationsByContinent } from '../lib/destinations';
 
 interface Props {
   lang: Lang;
@@ -11,7 +12,7 @@ interface Props {
   /** Gleiche Seite in der anderen Sprache */
   alt: string;
   image?: string;
-  active?: 'map' | 'trips' | 'diary' | 'about';
+  active?: 'map' | 'trips' | 'diary' | 'about' | 'dest';
 }
 
 const { lang, title, description, alt, image, active } = Astro.props;
@@ -23,9 +24,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 const altUrl = new URL(alt, Astro.site);
 const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
 
+const groups = await destinationsByContinent(lang);
 const nav = [
   { key: 'map', href: path('map', lang), label: tr.nav_map },
-  { key: 'trips', href: path('trips', lang), label: tr.nav_trips },
   { key: 'diary', href: path('diary', lang), label: tr.nav_diary },
   { key: 'about', href: path('about', lang), label: tr.nav_about },
 ] as const;
@@ -62,6 +63,12 @@ const nav = [
         </a>
         <nav class="nav" aria-label="Hauptnavigation">
           <ul>
+            <li class="mega-li">
+              <a href={path('dest', lang)} class="mega-trigger" aria-current={active === 'dest' || active === 'trips' ? 'page' : undefined}>{tr.nav_trips}</a>
+              <button type="button" class="mega-btn" aria-expanded="false" aria-controls="mega" aria-label={tr.dest_open_menu}>
+                <svg viewBox="0 0 12 8" width="10" height="7" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+              </button>
+            </li>
             {nav.map((n) => (
               <li><a href={n.href} aria-current={active === n.key ? 'page' : undefined}>{n.label}</a></li>
             ))}
@@ -70,6 +77,24 @@ const nav = [
         <div class="lang" role="group" aria-label={tr.switch_label}>
           <a href={lang === 'de' ? Astro.url.pathname : alt} hreflang="de" lang="de" aria-current={lang === 'de' ? 'true' : undefined}>DE</a>
           <a href={lang === 'en' ? Astro.url.pathname : alt} hreflang="en" lang="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+        </div>
+      </div>
+      <div id="mega" class="mega" hidden>
+        <div class="wrap mega-in">
+          <div class="mega-grid">
+            {groups.map((g) => (
+              <div class="mega-col">
+                <p class="mega-h">{g.name}</p>
+                <ul class="chips">
+                  {g.items.map((d) => <li><a class="chip" href={path('dest', lang, d.slug[lang])}>{d.name[lang]}</a></li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div class="mega-foot">
+            <a class="btn" href={path('dest', lang)}>{tr.dest_all}</a>
+            <a class="btn ghost" href={path('trips', lang)}>{tr.dest_trips_reports}</a>
+          </div>
         </div>
       </div>
     </header>
@@ -97,6 +122,29 @@ const nav = [
         </div>
       </div>
     </footer>
+
+    <script>
+      // Reiseziel-Menü: öffnet beim Drüberfahren (Computer) oder Antippen des Pfeils (Handy)
+      const btn = document.querySelector<HTMLButtonElement>('.mega-btn');
+      const panel = document.getElementById('mega');
+      const li = document.querySelector<HTMLElement>('.mega-li');
+      if (btn && panel && li) {
+        let timer: number | undefined;
+        const set = (open: boolean) => {
+          panel.hidden = !open;
+          btn.setAttribute('aria-expanded', String(open));
+        };
+        btn.addEventListener('click', () => set(panel.hidden));
+        const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        if (canHover) {
+          const open = () => { clearTimeout(timer); set(true); };
+          const close = () => { clearTimeout(timer); timer = window.setTimeout(() => set(false), 180); };
+          [li, panel].forEach((el) => { el.addEventListener('mouseenter', open); el.addEventListener('mouseleave', close); });
+        }
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) { set(false); btn.focus(); } });
+        document.addEventListener('click', (e) => { if (!panel.hidden && !panel.contains(e.target as Node) && !li.contains(e.target as Node)) set(false); });
+      }
+    </script>
   </body>
 </html>
 
@@ -107,10 +155,32 @@ const nav = [
   .site-header { position: sticky; top: 0; z-index: 50; background: rgba(236, 231, 227, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
   .bar { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; height: 72px; }
   .brand { color: var(--ink); text-decoration: none; display: inline-flex; }
-  .nav ul { list-style: none; display: flex; justify-content: center; gap: clamp(14px, 3vw, 34px); margin: 0; padding: 0; }
+  .nav ul { list-style: none; display: flex; align-items: center; justify-content: center; gap: clamp(14px, 3vw, 34px); margin: 0; padding: 0; }
   .nav a { color: var(--ink); text-decoration: none; font-weight: 550; font-size: 0.98rem; padding: 6px 2px; border-bottom: 2px solid transparent; }
   .nav a:hover { border-color: var(--line); }
   .nav a[aria-current='page'] { border-color: var(--gold); }
+
+  .mega-li { display: inline-flex; align-items: center; gap: 2px; }
+  .mega-btn { border: 0; background: none; color: var(--ink); cursor: pointer; padding: 8px 4px; display: inline-grid; place-items: center; border-radius: 6px; }
+  .mega-btn svg { transition: transform 0.2s ease; }
+  .mega-btn[aria-expanded='true'] svg { transform: rotate(180deg); }
+  .mega {
+    position: absolute; left: 0; right: 0; top: 100%;
+    background: var(--linen); border-bottom: 1px solid var(--line);
+    box-shadow: 0 24px 40px -24px rgba(45, 35, 25, 0.35);
+    max-height: calc(100vh - 120px); overflow-y: auto;
+  }
+  .mega-in { padding-top: 30px; padding-bottom: 26px; }
+  .mega-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 26px 40px; }
+  .mega-h { font-family: var(--serif); font-size: 1.35rem; margin: 0 0 12px; }
+  .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    display: inline-block; padding: 7px 13px; border-radius: 8px;
+    background: var(--sand); color: var(--ink); text-decoration: none; font-size: 0.95rem;
+    border: 1px solid transparent; transition: border-color 0.15s, background 0.15s;
+  }
+  .chip:hover, .chip:focus-visible { border-color: var(--gold); background: #f4efe9; }
+  .mega-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
 
   .lang { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; padding: 2px; }
   .lang a { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-decoration: none; color: var(--ink); padding: 5px 10px; border-radius: 999px; line-height: 1; }

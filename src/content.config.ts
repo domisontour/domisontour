@@ -66,4 +66,40 @@ const diary = defineCollection({
   }),
 });
 
-export const collections = { trips, diary };
+const highlight = z.object({
+  title_de: z.string(),
+  title_en: optText,
+  text_de: optText,
+  text_en: optText,
+  image: optText,
+});
+
+/** Reiseziel-Seite pro Land (Infos und Tipps) */
+const destinations = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/destinations' }),
+  schema: z.object({
+    country: z.string().transform((c) => c.trim().toUpperCase()),
+    name_de: optText,
+    name_en: optText,
+    cover: optText,
+    intro_de: optText,
+    intro_en: optText,
+    highlights: z.array(highlight).nullish().transform((v) => v ?? []),
+    routes_de: optText,
+    routes_en: optText,
+    best_time_de: optText,
+    best_time_en: optText,
+    stay_de: optText,
+    stay_en: optText,
+    car_de: optText,
+    car_en: optText,
+    packing_de: optText,
+    packing_en: optText,
+    costs_de: optText,
+    costs_en: optText,
+    tips_de: optText,
+    tips_en: optText,
+  }),
+});
+
+export const collections = { trips, diary, destinations };

@@ -227,6 +227,146 @@ content:
         type: boolean
         default: false
 
+  # ---------------- Reiseziele (Länderseiten) ----------------
+  - name: destinations
+    label: Reiseziele (Infos und Tipps pro Land)
+    type: collection
+    path: src/content/destinations
+    format: yaml-frontmatter
+    filename:
+      template: "{fields.country}.md"
+      field: create
+    view:
+      fields: [country, name_de]
+      primary: country
+    fields:
+      - name: country
+        label: Land (zweistelliger Code)
+        type: string
+        required: true
+        description: "z. B. ZA = Südafrika, IT = Italien, US = USA. Das Land erscheint automatisch im Menü unter Reisen."
+      - name: name_de
+        label: Anderer Name im Menü (Deutsch, optional)
+        type: string
+      - name: name_en
+        label: Anderer Name im Menü (Englisch, optional)
+        type: string
+      - name: cover
+        label: Titelbild
+        type: image
+      - name: intro_de
+        label: Einleitung (Deutsch)
+        type: rich-text
+        description: "Folgt auf „Wir sind Herr Domi und Frou Domi,“. Leer lassen = automatischer Text."
+        options:
+          format: markdown
+      - name: intro_en
+        label: Einleitung (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: highlights
+        label: Highlights
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.title_de}"
+        fields:
+          - name: title_de
+            label: Titel (Deutsch)
+            type: string
+            required: true
+          - name: title_en
+            label: Titel (Englisch)
+            type: string
+          - name: image
+            label: Foto
+            type: image
+          - name: text_de
+            label: Text (Deutsch)
+            type: text
+          - name: text_en
+            label: Text (Englisch)
+            type: text
+      - name: routes_de
+        label: Routen-Tipps (Deutsch)
+        type: rich-text
+        description: "Leer lassen = Abschnitt wird nicht angezeigt."
+        options:
+          format: markdown
+      - name: routes_en
+        label: Routen-Tipps (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: best_time_de
+        label: Reisezeit (Deutsch)
+        type: rich-text
+        description: "Leer lassen = Abschnitt wird nicht angezeigt."
+        options:
+          format: markdown
+      - name: best_time_en
+        label: Reisezeit (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: stay_de
+        label: Unterkünfte (Deutsch)
+        type: rich-text
+        description: "Leer lassen = Abschnitt wird nicht angezeigt."
+        options:
+          format: markdown
+      - name: stay_en
+        label: Unterkünfte (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: car_de
+        label: Mietwagen (Deutsch)
+        type: rich-text
+        description: "Leer lassen = Abschnitt wird nicht angezeigt."
+        options:
+          format: markdown
+      - name: car_en
+        label: Mietwagen (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: packing_de
+        label: Packliste (Deutsch)
+        type: rich-text
+        description: "Leer lassen = Abschnitt wird nicht angezeigt."
+        options:
+          format: markdown
+      - name: packing_en
+        label: Packliste (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: costs_de
+        label: Kosten (Deutsch)
+        type: rich-text
+        description: "Leer lassen = Abschnitt wird nicht angezeigt."
+        options:
+          format: markdown
+      - name: costs_en
+        label: Kosten (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: tips_de
+        label: Weitere Tipps (Deutsch)
+        type: rich-text
+        description: "Leer lassen = Abschnitt wird nicht angezeigt."
+        options:
+          format: markdown
+      - name: tips_en
+        label: Weitere Tipps (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+
   # ---------------- Allgemeines ----------------
   - name: site
     label: Über uns und Links
@@ -268,6 +408,34 @@ content:
             label: Link beim Antippen (optional)
             type: string
             description: "z. B. /reisen/suedafrika-2026/ (leer lassen = kein Link)"
+      - name: photo_couple
+        label: Paarfoto für die Reiseziel-Seiten
+        type: image
+      - name: planning_links
+        label: Links „Reise planen“ (auf jeder Reiseziel-Seite)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.provider}"
+        fields:
+          - name: label_de
+            label: Bezeichnung (Deutsch)
+            type: string
+          - name: label_en
+            label: Bezeichnung (Englisch)
+            type: string
+          - name: provider
+            label: Anbieter
+            type: string
+          - name: url
+            label: Link (z. B. euer Partner-Link)
+            type: string
+          - name: icon
+            label: Symbol
+            type: select
+            options:
+              values: [plane, bed, ticket, car, link]
       - name: photo_herr
         label: Foto Herr Domi
         type: image
