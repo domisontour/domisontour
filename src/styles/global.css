@@ -1,0 +1,118 @@
+@import '@fontsource-variable/figtree';
+@import '@fontsource/reenie-beanie';
+
+:root {
+  /* Farben Domis on Tour */
+  --sand: #ece3d2;        /* Seitenhintergrund */
+  --linen: #f8f3ea;       /* Polaroid-Rahmen, Karten */
+  --ink: #2b2a26;         /* Text */
+  --ink-soft: #625d53;    /* Nebentext */
+  --sea: #2c5f5d;         /* Links, Buttons, Routen */
+  --seaglass: #c9ddd6;    /* Wasser auf der Karte */
+  --blush: #e4b9b0;       /* bereiste Länder */
+  --sage: #b9c19f;        /* Akzente, Doodles */
+  --line: #d6cab4;        /* feine Linien */
+
+  --font: 'Figtree Variable', system-ui, sans-serif;
+  --hand: 'Reenie Beanie', 'Bradley Hand', cursive;
+
+  --shadow: 0 1px 2px rgba(60, 45, 20, 0.08), 0 8px 24px -6px rgba(60, 45, 20, 0.18);
+  --radius: 14px;
+  --wrap: 1180px;
+  --gutter: clamp(16px, 4vw, 40px);
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--sand);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* leichte Papierstruktur */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image: radial-gradient(rgba(90, 70, 40, 0.05) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: var(--sea); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible { outline: 2px solid var(--sea); outline-offset: 3px; border-radius: 4px; }
+
+h1, h2, h3 { line-height: 1.12; letter-spacing: -0.02em; margin: 0 0 0.5em; font-weight: 700; }
+h1 { font-size: clamp(2.3rem, 5.5vw, 4.2rem); letter-spacing: -0.035em; }
+h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
+h3 { font-size: 1.25rem; letter-spacing: -0.01em; }
+p { margin: 0 0 1em; }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+.measure { max-width: 64ch; }
+.lead { font-size: 1.2rem; color: var(--ink-soft); max-width: 52ch; }
+.hand { font-family: var(--hand); font-weight: 400; letter-spacing: 0; line-height: 1.1; }
+.muted { color: var(--ink-soft); }
+
+.section { padding-block: clamp(56px, 9vw, 104px); }
+.section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 32px; margin-bottom: 32px; }
+.section-head p { margin: 0; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px; border-radius: 999px;
+  font: 600 1rem/1 var(--font); text-decoration: none;
+  background: var(--sea); color: var(--linen); border: 1.5px solid var(--sea);
+  transition: background 0.15s, color 0.15s;
+}
+.btn:hover { background: #224b49; }
+.btn.ghost { background: transparent; color: var(--sea); }
+.btn.ghost:hover { background: rgba(44, 95, 93, 0.08); }
+
+/* Polaroid */
+.polaroid {
+  background: var(--linen);
+  padding: 10px 10px 0;
+  box-shadow: var(--shadow);
+  border-radius: 3px;
+}
+.polaroid .ph { aspect-ratio: 1 / 1; overflow: hidden; background: #ddd2bd; }
+.polaroid .ph img { width: 100%; height: 100%; object-fit: cover; }
+.polaroid figcaption, .polaroid .cap {
+  font-family: var(--hand);
+  font-size: 1.6rem;
+  line-height: 1.1;
+  padding: 10px 4px 14px;
+  color: var(--ink);
+  text-align: center;
+}
+
+/* Fliesstext aus dem Upload-Panel */
+.prose { max-width: 66ch; font-size: 1.125rem; line-height: 1.7; }
+.prose img { border-radius: 6px; margin: 1.5em 0; box-shadow: var(--shadow); }
+.prose h2 { font-size: 1.6rem; margin-top: 1.6em; }
+.prose h3 { margin-top: 1.4em; }
+.prose blockquote { margin: 1.5em 0; padding-left: 18px; border-left: 3px solid var(--sage); color: var(--ink-soft); }
+
+.note {
+  display: inline-block; font-size: 0.95rem; color: var(--ink-soft);
+  background: rgba(185, 193, 159, 0.3); padding: 6px 12px; border-radius: 8px; margin-bottom: 1.2em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

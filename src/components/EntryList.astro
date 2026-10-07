@@ -1,0 +1,42 @@
+---
+import Photo from './Photo.astro';
+import { pick, excerpt, type Entry } from '../lib/content';
+import { path, t, formatDate, type Lang } from '../lib/i18n';
+
+interface Props { entries: Entry[]; lang: Lang }
+const { entries, lang } = Astro.props;
+const tr = t(lang);
+---
+<ol class="entries">
+  {entries.map((e, i) => {
+    const title = pick(e.data, 'title', lang);
+    const img = e.data.cover || e.data.photos[0]?.image;
+    return (
+      <li>
+        <a href={path('diary', lang, e.id)} class="entry">
+          <div class="thumb"><Photo src={img} alt={title} tone={i + 1} /></div>
+          <div class="body">
+            <p class="when">
+              <time datetime={e.data.date.toISOString().slice(0, 10)}>{formatDate(e.data.date, lang)}</time>
+              {e.data.place && <span class="hand where">{e.data.place}</span>}
+            </p>
+            <h3>{title}</h3>
+            <p class="ex">{excerpt(pick(e.data, 'text', lang))}</p>
+          </div>
+        </a>
+      </li>
+    );
+  })}
+</ol>
+<style>
+  .entries { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .entry { display: grid; grid-template-columns: 132px 1fr; gap: 22px; align-items: center; padding: 18px 0; border-top: 1px dashed var(--line); color: inherit; text-decoration: none; }
+  li:last-child .entry { border-bottom: 1px dashed var(--line); }
+  .thumb { aspect-ratio: 4 / 3; border-radius: 8px; overflow: hidden; box-shadow: var(--shadow); }
+  .when { margin: 0 0 4px; font-size: 0.92rem; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
+  .where { font-size: 1.45rem; color: var(--sea); }
+  h3 { margin: 0 0 6px; }
+  .entry:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+  .ex { margin: 0; color: var(--ink-soft); }
+  @media (max-width: 560px) { .entry { grid-template-columns: 92px 1fr; gap: 14px; } .ex { display: none; } }
+</style>

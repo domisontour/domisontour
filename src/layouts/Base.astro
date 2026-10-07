@@ -1,0 +1,133 @@
+---
+import '../styles/global.css';
+import { path, t, type Lang } from '../lib/i18n';
+import { site } from '../lib/content';
+import Logo from '../components/Logo.astro';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** Gleiche Seite in der anderen Sprache */
+  alt: string;
+  image?: string;
+  active?: 'map' | 'trips' | 'diary' | 'about';
+}
+
+const { lang, title, description, alt, image, active } = Astro.props;
+const tr = t(lang);
+const other: Lang = lang === 'de' ? 'en' : 'de';
+const fullTitle = title ? `${title} | Domis on Tour` : 'Domis on Tour | Schweizer Reisepaar';
+const desc = description || tr.hero_lead;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const altUrl = new URL(alt, Astro.site);
+const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
+
+const nav = [
+  { key: 'map', href: path('map', lang), label: tr.nav_map },
+  { key: 'trips', href: path('trips', lang), label: tr.nav_trips },
+  { key: 'diary', href: path('diary', lang), label: tr.nav_diary },
+  { key: 'about', href: path('about', lang), label: tr.nav_about },
+] as const;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={lang} href={canonical} />
+    <link rel="alternate" hreflang={other} href={altUrl} />
+    <link rel="alternate" hreflang="x-default" href={lang === 'de' ? canonical : altUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#ece3d2" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Domis on Tour" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === 'de' ? 'de_CH' : 'en_GB'} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">{tr.skip}</a>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="brand" href={path('home', lang)} aria-label="Domis on Tour">
+          <Logo />
+        </a>
+        <nav class="nav" aria-label="Hauptnavigation">
+          <ul>
+            {nav.map((n) => (
+              <li><a href={n.href} aria-current={active === n.key ? 'page' : undefined}>{n.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+        <div class="lang" role="group" aria-label={tr.switch_label}>
+          <a href={lang === 'de' ? Astro.url.pathname : alt} hreflang="de" lang="de" aria-current={lang === 'de' ? 'true' : undefined}>DE</a>
+          <a href={lang === 'en' ? Astro.url.pathname : alt} hreflang="en" lang="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap foot">
+        <div>
+          <Logo />
+          <p class="hand foot-tag">{tr.tagline}</p>
+        </div>
+        <div class="foot-links">
+          {site.instagram && <a href={site.instagram} rel="me noopener" target="_blank">Instagram</a>}
+          {site.tiktok && <a href={site.tiktok} rel="me noopener" target="_blank">TikTok</a>}
+          {site.youtube && <a href={site.youtube} rel="me noopener" target="_blank">YouTube</a>}
+          {site.rednote && <a href={site.rednote} rel="me noopener" target="_blank">RedNote</a>}
+          {site.email && <a href={`mailto:${site.email}`}>E-Mail</a>}
+        </div>
+        <div class="foot-legal">
+          <a href={path('imprint', lang)}>{tr.imprint}</a>
+          <a href={path('privacy', lang)}>{tr.privacy}</a>
+          <span>© {new Date().getFullYear()} Domis on Tour</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .skip { position: absolute; left: -9999px; top: 8px; background: var(--ink); color: var(--linen); padding: 8px 14px; border-radius: 8px; z-index: 100; }
+  .skip:focus { left: 8px; }
+
+  .site-header { position: sticky; top: 0; z-index: 50; background: rgba(236, 227, 210, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .bar { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; height: 68px; }
+  .brand { color: var(--ink); text-decoration: none; display: inline-flex; }
+  .nav ul { list-style: none; display: flex; justify-content: center; gap: clamp(14px, 3vw, 34px); margin: 0; padding: 0; }
+  .nav a { color: var(--ink); text-decoration: none; font-weight: 550; font-size: 0.98rem; padding: 6px 2px; border-bottom: 2px solid transparent; }
+  .nav a:hover { border-color: var(--line); }
+  .nav a[aria-current='page'] { border-color: var(--sea); }
+
+  .lang { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; padding: 2px; }
+  .lang a { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-decoration: none; color: var(--ink); padding: 5px 10px; border-radius: 999px; line-height: 1; }
+  .lang a[aria-current='true'] { background: var(--ink); color: var(--linen); }
+
+  @media (max-width: 760px) {
+    .bar { grid-template-columns: 1fr auto; height: auto; padding-top: 12px; padding-bottom: 6px; row-gap: 6px; }
+    .nav { grid-column: 1 / -1; grid-row: 2; overflow-x: auto; }
+    .nav ul { justify-content: flex-start; gap: 22px; }
+  }
+
+  .site-footer { border-top: 1px solid var(--line); padding: 48px 0 40px; margin-top: 40px; }
+  .foot { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 28px; align-items: start; }
+  .foot-tag { font-size: 1.6rem; margin: 6px 0 0; color: var(--ink-soft); }
+  .foot-links, .foot-legal { display: flex; flex-direction: column; gap: 6px; }
+  .foot-links a, .foot-legal a { color: var(--ink); text-decoration: none; }
+  .foot-links a:hover, .foot-legal a:hover { text-decoration: underline; }
+  .foot-legal span { color: var(--ink-soft); font-size: 0.9rem; margin-top: 6px; }
+  @media (max-width: 760px) { .foot { grid-template-columns: 1fr; } }
+</style>

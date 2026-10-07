@@ -1,0 +1,267 @@
+# Upload-Panel für Domis on Tour (Pages CMS: https://app.pagescms.org)
+media:
+  input: public/uploads
+  output: /uploads
+  rename: safe
+  categories: [image]
+
+content:
+  # ---------------- Tagebuch ----------------
+  - name: diary
+    label: Tagebuch
+    type: collection
+    path: src/content/diary
+    format: yaml-frontmatter
+    filename:
+      template: "{year}-{month}-{primary}.md"
+      field: create
+    view:
+      fields: [title_de, date, place]
+      primary: title_de
+      sort: [date]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title_de
+        label: Titel (Deutsch)
+        type: string
+        required: true
+      - name: title_en
+        label: Titel (Englisch)
+        type: string
+        description: Leer lassen, dann wird der deutsche Titel angezeigt.
+      - name: date
+        label: Datum
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: trip
+        label: Gehört zur Reise
+        type: reference
+        options:
+          collection: trips
+          search: title_de
+          label: "{fields.title_de}"
+      - name: place
+        label: Ort
+        type: string
+        description: z. B. Addo Elephant National Park
+      - name: lat
+        label: Breitengrad (für die Karte)
+        type: number
+        description: "Optional. In Google Maps Rechtsklick auf den Ort, erste Zahl kopieren (z. B. -33.4461)."
+      - name: lng
+        label: Längengrad (für die Karte)
+        type: number
+        description: "Optional. Zweite Zahl aus Google Maps (z. B. 25.7458)."
+      - name: cover
+        label: Titelbild
+        type: image
+      - name: text_de
+        label: Text (Deutsch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: text_en
+        label: Text (Englisch)
+        type: rich-text
+        description: Optional. Leer lassen, dann erscheint der deutsche Text mit Hinweis.
+        options:
+          format: markdown
+      - name: photos
+        label: Fotos
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.caption_de}"
+        fields:
+          - name: image
+            label: Foto
+            type: image
+            required: true
+          - name: caption_de
+            label: Bildtext (Deutsch)
+            type: string
+          - name: caption_en
+            label: Bildtext (Englisch)
+            type: string
+      - name: draft
+        label: Entwurf (noch nicht veröffentlichen)
+        type: boolean
+        default: false
+
+  # ---------------- Reisen ----------------
+  - name: trips
+    label: Reisen
+    type: collection
+    path: src/content/trips
+    format: yaml-frontmatter
+    filename:
+      template: "{primary}-{year}.md"
+      field: create
+    view:
+      fields: [title_de, start]
+      primary: title_de
+      default:
+        sort: start
+        order: desc
+    fields:
+      - name: title_de
+        label: Name der Reise (Deutsch)
+        type: string
+        required: true
+        description: z. B. Südafrika oder Hawaii
+      - name: title_en
+        label: Name der Reise (Englisch)
+        type: string
+      - name: start
+        label: Startdatum
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: end
+        label: Enddatum
+        type: date
+        default: ""
+        options:
+          format: yyyy-MM-dd
+      - name: countries
+        label: Länder (zweistelliger Code)
+        type: string
+        list: true
+        description: "z. B. ZA = Südafrika, US = USA, MU = Mauritius, CH = Schweiz, TH = Thailand, PT = Portugal"
+      - name: cover
+        label: Titelbild
+        type: image
+      - name: summary_de
+        label: Kurzbeschreibung (Deutsch)
+        type: text
+      - name: summary_en
+        label: Kurzbeschreibung (Englisch)
+        type: text
+      - name: text_de
+        label: Reisebericht (Deutsch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: text_en
+        label: Reisebericht (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: best_time_de
+        label: Beste Reisezeit (Deutsch)
+        type: string
+      - name: best_time_en
+        label: Beste Reisezeit (Englisch)
+        type: string
+      - name: budget_de
+        label: Budget (Deutsch)
+        type: string
+        description: z. B. ca. CHF 4'500 pro Person inkl. Flug
+      - name: budget_en
+        label: Budget (Englisch)
+        type: string
+      - name: tip_de
+        label: Unser Tipp (Deutsch)
+        type: text
+      - name: tip_en
+        label: Unser Tipp (Englisch)
+        type: text
+      - name: stops
+        label: Route (Stopps in Reihenfolge)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.name}"
+        fields:
+          - name: name
+            label: Ort
+            type: string
+            required: true
+          - name: lat
+            label: Breitengrad
+            type: number
+            required: true
+            description: In Google Maps Rechtsklick auf den Ort, erste Zahl.
+          - name: lng
+            label: Längengrad
+            type: number
+            required: true
+            description: Zweite Zahl aus Google Maps.
+          - name: note_de
+            label: Notiz (Deutsch)
+            type: string
+          - name: note_en
+            label: Notiz (Englisch)
+            type: string
+      - name: show_route
+        label: Route als Linie auf der Karte zeigen
+        type: boolean
+        default: true
+      - name: gallery
+        label: Fotogalerie
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.caption_de}"
+        fields:
+          - name: image
+            label: Foto
+            type: image
+            required: true
+          - name: caption_de
+            label: Bildtext (Deutsch)
+            type: string
+          - name: caption_en
+            label: Bildtext (Englisch)
+            type: string
+      - name: draft
+        label: Entwurf (noch nicht veröffentlichen)
+        type: boolean
+        default: false
+
+  # ---------------- Allgemeines ----------------
+  - name: site
+    label: Über uns und Links
+    type: file
+    path: src/data/site.json
+    format: json
+    fields:
+      - name: about_de
+        label: Über uns (Deutsch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: about_en
+        label: Über uns (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: photo_herr
+        label: Foto Herr Domi
+        type: image
+      - name: photo_frou
+        label: Foto Frou Domi
+        type: image
+      - name: instagram
+        label: Instagram-Link
+        type: string
+      - name: tiktok
+        label: TikTok-Link
+        type: string
+      - name: youtube
+        label: YouTube-Link
+        type: string
+      - name: rednote
+        label: RedNote-Link
+        type: string
+      - name: email
+        label: Kontakt-E-Mail
+        type: string

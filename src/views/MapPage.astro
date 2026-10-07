@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import WorldMap from '../components/WorldMap.astro';
+import { getTrips, getEntries, buildMapData, countryName } from '../lib/content';
+import { path, t, type Lang } from '../lib/i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const tr = t(lang);
+const other: Lang = lang === 'de' ? 'en' : 'de';
+const trips = await getTrips();
+const entries = await getEntries();
+const data = buildMapData(trips, entries, lang);
+const names = [...new Set(trips.flatMap((x) => x.data.countries))].map((c) => countryName(c, lang)).sort((a, b) => a.localeCompare(b, lang));
+---
+<Base lang={lang} title={tr.map_title} description={tr.map_lead} alt={path('map', other)} active="map">
+  <section class="wrap section">
+    <h1>{tr.map_title}</h1>
+    <p class="lead">{tr.map_lead}</p>
+    <div class="legend">
+      <span><i class="k sea"></i>{lang === 'de' ? 'Reisestopp' : 'Trip stop'}</span>
+      <span><i class="k rose"></i>{lang === 'de' ? 'Tagebucheintrag' : 'Diary entry'}</span>
+      <span><i class="k land"></i>{lang === 'de' ? 'Bereistes Land' : 'Visited country'}</span>
+    </div>
+    <WorldMap data={data} lang={lang} label={tr.map_title} height="clamp(420px, 72vh, 760px)" />
+    {names.length > 0 && <p class="hand list">{names.join(', ')}</p>}
+  </section>
+</Base>
+<style>
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0 0 18px; font-size: 0.92rem; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .k { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+  .sea { background: var(--sea); } .rose { background: #c98f84; } .land { background: var(--blush); border-radius: 3px; }
+  .list { font-size: 1.9rem; color: var(--sea); margin-top: 24px; }
+</style>

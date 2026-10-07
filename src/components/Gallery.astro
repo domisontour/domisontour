@@ -1,0 +1,53 @@
+---
+import { type Lang } from '../lib/i18n';
+
+interface Props { photos: { image: string; caption_de: string; caption_en: string }[]; lang: Lang }
+const { photos, lang } = Astro.props;
+const cap = (p: Props['photos'][number]) => (lang === 'en' && p.caption_en) || p.caption_de || '';
+const tilts = [-2, 1.5, -0.8, 2.2, -1.4, 0.6];
+---
+<div class="gallery">
+  {photos.map((p, i) => (
+    <button type="button" class="polaroid g" style={`--tilt:${tilts[i % tilts.length]}deg`} data-src={p.image} data-cap={cap(p)} aria-label={cap(p) || `Foto ${i + 1}`}>
+      <span class="ph"><img src={p.image} alt={cap(p)} loading="lazy" decoding="async" /></span>
+      {cap(p) && <span class="cap">{cap(p)}</span>}
+    </button>
+  ))}
+</div>
+<dialog class="lightbox" aria-label="Foto">
+  <form method="dialog"><button class="close" aria-label={lang === 'de' ? 'Schliessen' : 'Close'}>×</button></form>
+  <figure><img alt="" /><figcaption class="hand"></figcaption></figure>
+</dialog>
+
+<style>
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: clamp(20px, 3vw, 36px); }
+  .g { border: 0; cursor: zoom-in; font: inherit; text-align: center; transform: rotate(var(--tilt)); transition: transform 0.2s ease; }
+  .g:hover, .g:focus-visible { transform: rotate(0) scale(1.03); }
+  .g .ph { display: block; }
+  .g .cap { display: block; }
+  .g:not(:has(.cap)) { padding-bottom: 24px; }
+
+  .lightbox { border: 0; padding: 0; background: transparent; max-width: min(92vw, 1100px); }
+  .lightbox::backdrop { background: rgba(30, 26, 20, 0.82); }
+  .lightbox figure { margin: 0; background: var(--linen); padding: 12px 12px 4px; border-radius: 3px; }
+  .lightbox img { max-height: 78vh; width: auto; margin: 0 auto; }
+  .lightbox figcaption { font-size: 1.8rem; text-align: center; padding: 8px; min-height: 1em; }
+  .close { position: absolute; top: 4px; right: 8px; z-index: 2; width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--linen); font-size: 1.6rem; cursor: pointer; box-shadow: var(--shadow); }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.gallery').forEach((gal) => {
+    const dlg = gal.nextElementSibling as HTMLDialogElement;
+    const img = dlg.querySelector('img')!;
+    const cap = dlg.querySelector('figcaption')!;
+    gal.querySelectorAll<HTMLButtonElement>('.g').forEach((b) =>
+      b.addEventListener('click', () => {
+        img.src = b.dataset.src || '';
+        img.alt = b.dataset.cap || '';
+        cap.textContent = b.dataset.cap || '';
+        dlg.showModal();
+      }),
+    );
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  });
+</script>

@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import { md } from '../lib/content';
+import { path, t, type Lang } from '../lib/i18n';
+interface Props { lang: Lang; page: 'imprint' | 'privacy' }
+const { lang, page } = Astro.props;
+const tr = t(lang);
+const other: Lang = lang === 'de' ? 'en' : 'de';
+const files = import.meta.glob('../data/legal/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const raw = files[`../data/legal/${page}-${lang}.md`] ?? files[`../data/legal/${page}-de.md`] ?? '';
+---
+<Base lang={lang} title={tr[page]} alt={path(page, other)}>
+  <section class="wrap section">
+    <div class="prose" set:html={md(raw)} />
+  </section>
+</Base>

@@ -1,0 +1,116 @@
+---
+import Base from '../layouts/Base.astro';
+import WorldMap from '../components/WorldMap.astro';
+import Photo from '../components/Photo.astro';
+import Gallery from '../components/Gallery.astro';
+import EntryList from '../components/EntryList.astro';
+import { pick, isFallback, md, countryName, tripDays, buildMapData, getEntries, slugOf, type Trip } from '../lib/content';
+import { path, t, formatRange, type Lang } from '../lib/i18n';
+
+interface Props { lang: Lang; trip: Trip }
+const { lang, trip } = Astro.props;
+const tr = t(lang);
+const other: Lang = lang === 'de' ? 'en' : 'de';
+const d = trip.data;
+
+const title = pick(d, 'title', lang);
+const summary = pick(d, 'summary', lang);
+const text = pick(d, 'text', lang);
+const days = tripDays(trip);
+const countryLabel = d.countries.map((c) => countryName(c, lang)).join(', ');
+const entries = (await getEntries()).filter((e) => slugOf(e.data.trip) === trip.id).reverse();
+const mapData = buildMapData([trip], [], lang);
+const facts = [
+  days ? { k: tr.fact_duration, v: `${days} ${tr.days}` } : null,
+  pick(d, 'best_time', lang) ? { k: tr.fact_best_time, v: pick(d, 'best_time', lang) } : null,
+  pick(d, 'budget', lang) ? { k: tr.fact_budget, v: pick(d, 'budget', lang) } : null,
+  pick(d, 'tip', lang) ? { k: tr.fact_tip, v: pick(d, 'tip', lang) } : null,
+].filter(Boolean) as { k: string; v: string }[];
+---
+<Base lang={lang} title={title} description={summary} alt={path('trips', other, trip.id)} image={d.cover || undefined} active="trips">
+  <article>
+    <header class="wrap head">
+      <div>
+        <a class="back" href={path('trips', lang)}>{tr.back_trips}</a>
+        {countryLabel && countryLabel !== title && <p class="hand where">{countryLabel}</p>}
+        <h1>{title}</h1>
+        <p class="when">{formatRange(d.start, d.end, lang)}</p>
+        {summary && <p class="lead">{summary}</p>}
+      </div>
+      <figure class="polaroid cover">
+        <div class="ph"><Photo src={d.cover} alt={title} label={tr.photo_soon} eager /></div>
+        <figcaption>{title}</figcaption>
+      </figure>
+    </header>
+
+    <section class="wrap body section">
+      <div>
+        {isFallback(d, 'text', lang) && <p class="note">{tr.fallback_note}</p>}
+        <div class="prose" set:html={md(text)} />
+      </div>
+      {facts.length > 0 && (
+        <aside class="facts" aria-label={tr.facts_title}>
+          <h2 class="hand">{tr.facts_title}</h2>
+          <dl>{facts.map((f) => <div><dt>{f.k}</dt><dd>{f.v}</dd></div>)}</dl>
+        </aside>
+      )}
+    </section>
+
+    {d.stops.length > 0 && (
+      <section class="wrap section route">
+        <h2>{tr.route_title}</h2>
+        <div class="route-grid">
+          <ol class="stops">
+            {d.stops.map((s) => (
+              <li>
+                <strong>{s.name}</strong>
+                {pick(s, 'note', lang) && <span class="muted">{pick(s, 'note', lang)}</span>}
+              </li>
+            ))}
+          </ol>
+          <WorldMap data={mapData} lang={lang} mode="fit" height="clamp(340px, 55vh, 520px)" label={tr.route_title} />
+        </div>
+      </section>
+    )}
+
+    {d.gallery.length > 0 && (
+      <section class="wrap section">
+        <h2>{tr.gallery_title}</h2>
+        <Gallery photos={d.gallery} lang={lang} />
+      </section>
+    )}
+
+    {entries.length > 0 && (
+      <section class="wrap section">
+        <h2>{tr.trip_diary}</h2>
+        <EntryList entries={entries} lang={lang} />
+      </section>
+    )}
+  </article>
+</Base>
+
+<style>
+  .head { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(28px, 5vw, 72px); align-items: center; padding-top: clamp(32px, 5vw, 64px); }
+  .back { font-size: 0.95rem; display: inline-block; margin-bottom: 18px; }
+  .where { font-size: 2rem; color: var(--sea); margin: 0 0 4px; }
+  .when { color: var(--ink-soft); font-weight: 550; margin-bottom: 14px; }
+  .cover { transform: rotate(2.5deg); margin: 0; max-width: 440px; justify-self: end; width: 100%; }
+  @media (max-width: 860px) { .head { grid-template-columns: 1fr; } .cover { justify-self: center; max-width: 360px; } }
+
+  .body { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: clamp(28px, 5vw, 64px); align-items: start; }
+  @media (max-width: 860px) { .body { grid-template-columns: 1fr; } }
+
+  .facts { background: var(--linen); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow); position: sticky; top: 92px; }
+  .facts h2 { font-size: 2rem; color: var(--sea); margin-bottom: 8px; letter-spacing: 0; }
+  .facts dl { margin: 0; }
+  .facts div { padding: 10px 0; border-top: 1px dashed var(--line); }
+  .facts dt { font-size: 0.85rem; color: var(--ink-soft); }
+  .facts dd { margin: 2px 0 0; font-weight: 600; }
+
+  .route-grid { display: grid; grid-template-columns: 280px 1fr; gap: clamp(24px, 4vw, 48px); align-items: start; }
+  @media (max-width: 860px) { .route-grid { grid-template-columns: 1fr; } }
+  .stops { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+  .stops li { counter-increment: s; position: relative; padding: 0 0 22px 46px; display: flex; flex-direction: column; }
+  .stops li::before { content: counter(s); position: absolute; left: 0; top: -2px; width: 30px; height: 30px; border-radius: 50%; background: var(--sea); color: var(--linen); display: grid; place-items: center; font-size: 0.85rem; font-weight: 700; }
+  .stops li:not(:last-child)::after { content: ''; position: absolute; left: 14px; top: 32px; bottom: 2px; border-left: 2px dashed var(--line); }
+</style>

@@ -1,0 +1,31 @@
+---
+import Photo from './Photo.astro';
+import { pick, countryName, type Trip } from '../lib/content';
+import { path, t, formatRange, type Lang } from '../lib/i18n';
+
+interface Props { trip: Trip; lang: Lang; index: number }
+const { trip, lang, index } = Astro.props;
+const title = pick(trip.data, 'title', lang);
+const summary = pick(trip.data, 'summary', lang);
+const tilt = [-1.6, 1.2, -0.6, 1.8][index % 4];
+const countryList = trip.data.countries.map((c) => countryName(c, lang)).join(', ');
+---
+<article class="trip">
+  <a href={path('trips', lang, trip.id)} class="card-link">
+    <figure class="polaroid" style={`--tilt:${tilt}deg`}>
+      <div class="ph"><Photo src={trip.data.cover} alt={title} label={t(lang).photo_soon} tone={index} /></div>
+      <figcaption>{title}</figcaption>
+    </figure>
+  </a>
+  <p class="meta"><span>{formatRange(trip.data.start, trip.data.end, lang)}</span>{countryList && <span class="hand c">{countryList}</span>}</p>
+  {summary && <p class="sum">{summary}</p>}
+</article>
+<style>
+  .trip { display: flex; flex-direction: column; }
+  .card-link { text-decoration: none; color: inherit; display: block; }
+  .polaroid { margin: 0 0 16px; transform: rotate(var(--tilt)); transition: transform 0.25s ease; }
+  .card-link:hover .polaroid, .card-link:focus-visible .polaroid { transform: rotate(0deg) translateY(-4px); }
+  .meta { font-size: 0.92rem; color: var(--ink-soft); margin: 0 0 6px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; }
+  .c { font-size: 1.45rem; color: var(--sea); }
+  .sum { margin: 0; }
+</style>

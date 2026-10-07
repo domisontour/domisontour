@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import EntryList from '../components/EntryList.astro';
+import { getEntries } from '../lib/content';
+import { path, t, type Lang } from '../lib/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const tr = t(lang);
+const other: Lang = lang === 'de' ? 'en' : 'de';
+const entries = await getEntries();
+const years = [...new Set(entries.map((e) => e.data.date.getFullYear()))];
+---
+<Base lang={lang} title={tr.diary_title} description={tr.diary_lead} alt={path('diary', other)} active="diary">
+  <section class="wrap section">
+    <h1>{tr.diary_title}</h1>
+    <p class="lead">{tr.diary_lead}</p>
+    {entries.length === 0 && <p class="muted">{tr.empty_diary}</p>}
+    {years.map((y) => (
+      <div class="year">
+        <h2 class="hand">{y}</h2>
+        <EntryList entries={entries.filter((e) => e.data.date.getFullYear() === y)} lang={lang} />
+      </div>
+    ))}
+  </section>
+</Base>
+<style>
+  .year { margin-top: 40px; max-width: 860px; }
+  .year h2 { font-size: 2.6rem; color: var(--sea); margin-bottom: 4px; letter-spacing: 0; }
+</style>

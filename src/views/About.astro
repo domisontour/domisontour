@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import { site, pick, md } from '../lib/content';
+import { path, t, type Lang } from '../lib/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const tr = t(lang);
+const other: Lang = lang === 'de' ? 'en' : 'de';
+const s = site as Record<string, any>;
+---
+<Base lang={lang} title={tr.about_title} alt={path('about', other)} active="about">
+  <section class="wrap section about">
+    <div class="pair">
+      <figure class="polaroid a"><div class="ph"><Photo src={s.photo_herr} alt="Herr Domi" label={tr.photo_soon} tone={1} /></div><figcaption>Herr Domi</figcaption></figure>
+      <figure class="polaroid b"><div class="ph"><Photo src={s.photo_frou} alt="Frou Domi" label={tr.photo_soon} tone={2} /></div><figcaption>Frou Domi</figcaption></figure>
+    </div>
+    <div>
+      <h1>{tr.about_title}</h1>
+      <div class="prose" set:html={md(pick(site, 'about', lang))} />
+      {site.instagram && <a class="btn" href={site.instagram} target="_blank" rel="me noopener">Instagram</a>}
+    </div>
+  </section>
+</Base>
+<style>
+  .about { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(32px, 6vw, 88px); align-items: center; }
+  .pair { position: relative; height: clamp(360px, 40vw, 480px); }
+  .pair .polaroid { position: absolute; width: 62%; margin: 0; }
+  .a { left: 0; top: 0; transform: rotate(-5deg); }
+  .b { right: 0; bottom: 0; transform: rotate(4deg); }
+  @media (max-width: 860px) { .about { grid-template-columns: 1fr; } .pair { max-width: 420px; width: 100%; margin: 0 auto; height: 380px; } }
+</style>

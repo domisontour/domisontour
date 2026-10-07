@@ -1,0 +1,199 @@
+---
+import type { MapData } from '../lib/content';
+import type { Lang } from '../lib/i18n';
+import { t } from '../lib/i18n';
+
+interface Props {
+  data: MapData;
+  lang: Lang;
+  /** world = ganze Welt zeigen, fit = auf die Pins zoomen */
+  mode?: 'world' | 'fit';
+  height?: string;
+  label: string;
+}
+const { data, lang, mode = 'world', height = 'clamp(380px, 62vh, 640px)', label } = Astro.props;
+const tr = t(lang);
+---
+<div class="map-frame" style={`--h:${height}`}>
+  <div
+    class="world-map"
+    role="region"
+    aria-label={label}
+    data-map={JSON.stringify(data)}
+    data-mode={mode}
+    data-lang={lang}
+    data-open={lang === 'de' ? 'Ansehen' : 'Open'}
+  ></div>
+  <p class="hint">{tr.map_hint}</p>
+  {data.pins.length > 0 && (
+    <noscript>
+      <ul>{data.pins.map((p) => <li><a href={p.href}>{p.title}</a></li>)}</ul>
+    </noscript>
+  )}
+</div>
+
+<style>
+  .map-frame { position: relative; background: var(--linen); padding: 10px; border-radius: 6px; box-shadow: var(--shadow); }
+  .world-map { height: var(--h); border-radius: 3px; overflow: hidden; background: var(--seaglass); }
+  .hint { position: absolute; left: 22px; bottom: 18px; margin: 0; font-size: 0.8rem; color: var(--ink-soft); background: rgba(248, 243, 234, 0.85); padding: 3px 10px; border-radius: 999px; pointer-events: none; }
+  @media (max-width: 600px) { .hint { display: none; } }
+</style>
+
+<style is:global>
+  .dot-pin { width: 26px; height: 34px; padding: 0; border: 0; background: none; cursor: pointer; filter: drop-shadow(0 2px 3px rgba(40, 30, 10, 0.35)); }
+  .dot-pin svg { width: 100%; height: 100%; display: block; }
+  .dot-pin:hover, .dot-pin:focus-visible { transform: translateY(-2px); }
+  .maplibregl-popup-content { background: var(--linen); border-radius: 4px; padding: 10px; box-shadow: var(--shadow); font-family: var(--font); }
+  .maplibregl-popup-tip { border-top-color: var(--linen) !important; border-bottom-color: var(--linen) !important; }
+  .pop { width: 190px; }
+  .pop .pimg { aspect-ratio: 4 / 3; background: #ddd2bd; overflow: hidden; margin-bottom: 8px; }
+  .pop .pimg img { width: 100%; height: 100%; object-fit: cover; }
+  .pop .pt { font-family: var(--hand); font-size: 1.55rem; line-height: 1.05; margin: 0 0 2px; color: var(--ink); }
+  .pop .ps { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 8px; }
+  .pop a { font-weight: 600; font-size: 0.9rem; }
+  .maplibregl-ctrl-attrib { background: rgba(248, 243, 234, 0.8) !important; font-size: 10px; }
+  .maplibregl-cooperative-gesture-screen { font-family: var(--font); background: rgba(43, 42, 38, 0.55); }
+</style>
+
+<script>
+  import 'maplibre-gl/dist/maplibre-gl.css';
+  import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
+  import { feature } from 'topojson-client';
+
+  let libPromise: Promise<typeof import('maplibre-gl')> | null = null;
+  const loadLib = () =>
+    (libPromise ??= import('maplibre-gl').then((m) => {
+      m.setWorkerUrl(workerUrl);
+      return m;
+    }));
+
+  type Pin = { lat: number; lng: number; title: string; sub: string; href: string; image: string; kind: 'stop' | 'entry' };
+  type Data = { countries: string[]; pins: Pin[]; routes: { coords: [number, number][] }[] };
+
+  let worldPromise: Promise<any> | null = null;
+  function loadWorld() {
+    worldPromise ??= fetch('/map/countries-50m.json')
+      .then((r) => r.json())
+      .then((topo) => {
+        const fc: any = feature(topo, topo.objects.countries);
+        // Antarktis weglassen, Länder über der Datumsgrenze (Russland, Fidschi) korrekt zusammenhalten
+        fc.features = fc.features.filter((f: any) => f.id !== '010');
+        const fixRing = (ring: number[][]) => {
+          const crosses = ring.some((c) => c[0] > 170) && ring.some((c) => c[0] < -170);
+          return crosses ? ring.map((c) => [c[0] < 0 ? c[0] + 360 : c[0], c[1]]) : ring;
+        };
+        fc.features.forEach((f: any) => {
+          f.properties = { ...(f.properties || {}), iso: String(f.id ?? '') };
+          const g = f.geometry;
+          if (!g) return;
+          if (g.type === 'Polygon') g.coordinates = g.coordinates.map(fixRing);
+          if (g.type === 'MultiPolygon') g.coordinates = g.coordinates.map((poly: number[][][]) => poly.map(fixRing));
+        });
+        return fc;
+      });
+    return worldPromise;
+  }
+
+  const css = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+  function pinSvg(kind: Pin['kind']) {
+    const fill = kind === 'entry' ? '#c98f84' : css('--sea');
+    return `<svg viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1C6 1 1.5 5.4 1.5 11.2 1.5 19 12 31 12 31s10.5-12 10.5-19.8C22.5 5.4 18 1 12 1z" fill="${fill}" stroke="#f8f3ea" stroke-width="1.5"/><circle cx="12" cy="11" r="4" fill="#f8f3ea"/></svg>`;
+  }
+
+  function esc(s: string) {
+    return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+  }
+
+  async function init(el: HTMLElement) {
+    const data: Data = JSON.parse(el.dataset.map || '{}');
+    const lang = el.dataset.lang;
+    const [maplibregl, world] = await Promise.all([loadLib(), loadWorld()]);
+    const narrow = el.clientWidth < 640;
+
+    const map = new maplibregl.Map({
+      container: el,
+      center: [18, 12],
+      zoom: narrow ? 0.25 : 1.05,
+      minZoom: 0,
+      maxZoom: 9,
+      renderWorldCopies: false,
+      cooperativeGestures: true,
+      dragRotate: false,
+      pitchWithRotate: false,
+      attributionControl: { compact: true, customAttribution: 'Karte: Natural Earth' },
+      locale: lang === 'de'
+        ? {
+            'CooperativeGesturesHandler.WindowsHelpText': 'Strg + Mausrad zum Zoomen',
+            'CooperativeGesturesHandler.MacHelpText': '⌘ + Mausrad zum Zoomen',
+            'CooperativeGesturesHandler.MobileHelpText': 'Mit zwei Fingern bewegen',
+            'NavigationControl.ZoomIn': 'Hineinzoomen',
+            'NavigationControl.ZoomOut': 'Herauszoomen',
+          }
+        : undefined,
+      style: {
+        version: 8,
+        sources: {
+          world: { type: 'geojson', data: world },
+          routes: {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: data.routes.map((r) => ({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: r.coords } })),
+            },
+          },
+        },
+        layers: [
+          { id: 'sea', type: 'background', paint: { 'background-color': css('--seaglass') } },
+          { id: 'land', type: 'fill', source: 'world', paint: { 'fill-color': '#f4eee2' } },
+          {
+            id: 'visited',
+            type: 'fill',
+            source: 'world',
+            filter: ['in', ['get', 'iso'], ['literal', data.countries]],
+            paint: { 'fill-color': css('--blush'), 'fill-opacity': 0.75 },
+          },
+          { id: 'borders', type: 'line', source: 'world', paint: { 'line-color': '#cdbfa6', 'line-width': 0.6 } },
+          {
+            id: 'route',
+            type: 'line',
+            source: 'routes',
+            layout: { 'line-cap': 'round', 'line-join': 'round' },
+            paint: { 'line-color': css('--sea'), 'line-width': 2, 'line-dasharray': [1.5, 2] },
+          },
+        ],
+      },
+    });
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+
+    for (const p of data.pins) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dot-pin';
+      btn.setAttribute('aria-label', p.title);
+      btn.innerHTML = pinSvg(p.kind);
+      const img = p.image ? `<div class="pimg"><img src="${esc(p.image)}" alt="" loading="lazy"></div>` : '';
+      const popup = new maplibregl.Popup({ offset: 30, closeButton: false, maxWidth: '220px' }).setHTML(
+        `<div class="pop">${img}<p class="pt">${esc(p.title)}</p>${p.sub ? `<p class="ps">${esc(p.sub)}</p>` : ''}<a href="${esc(p.href)}">${esc(el.dataset.open || 'Open')}</a></div>`,
+      );
+      new maplibregl.Marker({ element: btn, anchor: 'bottom' }).setLngLat([p.lng, p.lat]).setPopup(popup).addTo(map);
+    }
+
+    if (el.dataset.mode === 'fit' && data.pins.length) {
+      const b = new maplibregl.LngLatBounds();
+      data.pins.forEach((p) => b.extend([p.lng, p.lat]));
+      map.fitBounds(b, { padding: { top: 60, bottom: 40, left: 40, right: 40 }, maxZoom: 6, duration: 0 });
+    }
+  }
+
+  const maps = document.querySelectorAll<HTMLElement>('.world-map');
+  const io = new IntersectionObserver((items) => {
+    items.forEach((it) => {
+      if (it.isIntersecting) {
+        io.unobserve(it.target);
+        init(it.target as HTMLElement);
+      }
+    });
+  }, { rootMargin: '200px' });
+  maps.forEach((m) => io.observe(m));
+</script>

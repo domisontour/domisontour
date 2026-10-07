@@ -1,0 +1,10 @@
+---
+import DiaryEntry from '../../../views/DiaryEntry.astro';
+import { getEntries } from '../../../lib/content';
+export async function getStaticPaths() {
+  const entries = await getEntries();
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<DiaryEntry lang="en" entry={entry} />

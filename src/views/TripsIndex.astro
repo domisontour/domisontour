@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import TripCard from '../components/TripCard.astro';
+import { getTrips } from '../lib/content';
+import { path, t, type Lang } from '../lib/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const tr = t(lang);
+const other: Lang = lang === 'de' ? 'en' : 'de';
+const trips = await getTrips();
+---
+<Base lang={lang} title={tr.trips_title} description={tr.trips_lead} alt={path('trips', other)} active="trips">
+  <section class="wrap section">
+    <h1>{tr.trips_title}</h1>
+    <p class="lead">{tr.trips_lead}</p>
+    {trips.length ? (
+      <div class="grid">{trips.map((trip, i) => <TripCard trip={trip} lang={lang} index={i} />)}</div>
+    ) : <p class="muted">{tr.empty_trips}</p>}
+  </section>
+</Base>
+<style>
+  .grid { margin-top: 48px; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: clamp(32px, 4vw, 56px); }
+</style>
