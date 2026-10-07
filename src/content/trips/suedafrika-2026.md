@@ -5,7 +5,7 @@ start: 2026-09-05
 end: 2026-09-27
 countries:
   - ZA
-cover: ''
+cover: /uploads/kapstadt-tafelberg.jpg
 summary_de: Drei Wochen von Kapstadt über die Küste bis in den Busch. Wale, Pinguine, Elefanten im Addo und Leoparden im Greater Kruger.
 summary_en: Three weeks from Cape Town along the coast and into the bush. Whales, penguins, elephants in Addo and leopards in Greater Kruger.
 text_de: |-
@@ -39,6 +39,12 @@ stops:
     lng: 31.4550
     note_de: ''
     note_en: ''
-gallery: []
+gallery:
+  - image: /uploads/kapstadt-tafelberg.jpg
+    caption_de: Auf dem Tafelberg
+    caption_en: On Table Mountain
+  - image: /uploads/kapstadt-camps-bay.jpg
+    caption_de: Camps Bay
+    caption_en: Camps Bay
 draft: false
 ---
