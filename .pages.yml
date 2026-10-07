@@ -265,3 +265,46 @@ content:
       - name: email
         label: Kontakt-E-Mail
         type: string
+
+  # ---------------- Weltkarte ----------------
+  - name: worldmap
+    label: Weltkarte (bereiste Länder und Orte)
+    type: file
+    path: src/data/places.json
+    format: json
+    fields:
+      - name: countries
+        label: Bereiste Länder (zweistelliger Code)
+        type: string
+        list: true
+        description: "z. B. FR = Frankreich, IT = Italien, US = USA, TH = Thailand, PT = Portugal. Länder aus Reisen werden automatisch ergänzt."
+      - name: us_states
+        label: Bereiste US-Bundesstaaten (Kürzel)
+        type: string
+        list: true
+        description: "z. B. CA = Kalifornien, NV = Nevada, HI = Hawaii, FL = Florida, NY = New York"
+      - name: places
+        label: Besuchte Orte (Pins)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.name_de}"
+        fields:
+          - name: name_de
+            label: Ort (Deutsch)
+            type: string
+            required: true
+          - name: name_en
+            label: Ort (Englisch)
+            type: string
+          - name: lat
+            label: Breitengrad
+            type: number
+            required: true
+            description: In Google Maps Rechtsklick auf den Ort, erste Zahl.
+          - name: lng
+            label: Längengrad
+            type: number
+            required: true
+            description: Zweite Zahl aus Google Maps.

@@ -6,13 +6,19 @@ import { t } from '../lib/i18n';
 interface Props {
   data: MapData;
   lang: Lang;
-  /** world = ganze Welt zeigen, fit = auf die Pins zoomen */
+  /** world = ganzer Globus mit langsamer Drehung, fit = auf die Pins zoomen */
   mode?: 'world' | 'fit';
   height?: string;
   label: string;
+  /** Status "x % der Welt bereist" oben rechts anzeigen */
+  status?: boolean;
 }
-const { data, lang, mode = 'world', height = 'clamp(380px, 62vh, 640px)', label } = Astro.props;
+const { data, lang, mode = 'world', height = 'clamp(420px, 70vh, 680px)', label, status = false } = Astro.props;
 const tr = t(lang);
+const s = data.stats;
+const pct = Math.round((s.countries / s.countriesTotal) * 1000) / 10;
+const pctLabel = pct.toLocaleString(lang === 'de' ? 'de-CH' : 'en-GB');
+const de = lang === 'de';
 ---
 <div class="map-frame" style={`--h:${height}`}>
   <div
@@ -22,35 +28,87 @@ const tr = t(lang);
     data-map={JSON.stringify(data)}
     data-mode={mode}
     data-lang={lang}
-    data-open={lang === 'de' ? 'Ansehen' : 'Open'}
+    data-open={de ? 'Ansehen' : 'Open'}
   ></div>
+
+  {status && (
+    <div class="status" aria-label={de ? 'Reisestatus' : 'Travel status'}>
+      <p class="pct"><span>{pctLabel}</span>&thinsp;%</p>
+      <p class="pct-label">{de ? 'der Welt bereist' : 'of the world explored'}</p>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax={s.countriesTotal} aria-valuenow={s.countries} aria-label={de ? 'Bereiste Länder' : 'Countries visited'}>
+        <i style={`width:${Math.max(pct, 1.5)}%`}></i>
+      </div>
+      <dl>
+        <div><dt>{de ? 'Länder' : 'Countries'}</dt><dd>{s.countries} <span>/ {s.countriesTotal}</span></dd></div>
+        {s.states > 0 && <div><dt>{de ? 'US-Staaten' : 'US states'}</dt><dd>{s.states} <span>/ {s.statesTotal}</span></dd></div>}
+      </dl>
+      <ul class="key">
+        <li><i class="k visited"></i>{de ? 'Bereist' : 'Visited'}</li>
+        <li><i class="k open"></i>{de ? 'Noch offen' : 'Still to explore'}</li>
+      </ul>
+    </div>
+  )}
+
   <p class="hint">{tr.map_hint}</p>
   {data.pins.length > 0 && (
     <noscript>
-      <ul>{data.pins.map((p) => <li><a href={p.href}>{p.title}</a></li>)}</ul>
+      <ul>{data.pins.map((p) => <li>{p.href ? <a href={p.href}>{p.title}</a> : p.title}</li>)}</ul>
     </noscript>
   )}
 </div>
 
 <style>
   .map-frame { position: relative; background: var(--linen); padding: 10px; border-radius: 6px; box-shadow: var(--shadow); }
-  .world-map { height: var(--h); border-radius: 3px; overflow: hidden; background: var(--seaglass); }
+  .world-map {
+    height: var(--h); border-radius: 3px; overflow: hidden;
+    background: radial-gradient(circle at 50% 50%, #f4ecdd 0%, #e9dfcc 55%, #e2d6bf 100%);
+  }
   .hint { position: absolute; left: 22px; bottom: 18px; margin: 0; font-size: 0.8rem; color: var(--ink-soft); background: rgba(248, 243, 234, 0.85); padding: 3px 10px; border-radius: 999px; pointer-events: none; }
-  @media (max-width: 600px) { .hint { display: none; } }
+
+  .status {
+    position: absolute; top: 22px; right: 22px; width: 196px;
+    background: rgba(248, 243, 234, 0.94); border-radius: 10px; padding: 14px 16px 12px;
+    box-shadow: 0 6px 18px -8px rgba(60, 45, 20, 0.35);
+  }
+  .pct { margin: 0; font-size: 2.6rem; font-weight: 750; letter-spacing: -0.04em; line-height: 1; }
+  .pct-label { margin: 2px 0 10px; font-family: var(--hand); font-size: 1.45rem; line-height: 1; color: var(--sea); }
+  .bar { height: 6px; border-radius: 99px; background: #e6dccb; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--sea); border-radius: 99px; }
+  .status dl { margin: 12px 0 0; display: grid; gap: 4px; }
+  .status dl div { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.88rem; }
+  .status dt { color: var(--ink-soft); }
+  .status dd { margin: 0; font-weight: 700; }
+  .status dd span { font-weight: 400; color: var(--ink-soft); }
+  .key { list-style: none; margin: 10px 0 0; padding: 10px 0 0; border-top: 1px dashed var(--line); display: flex; gap: 14px; font-size: 0.8rem; color: var(--ink-soft); }
+  .key li { display: inline-flex; align-items: center; gap: 6px; }
+  .k { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+  .k.visited { background: var(--blush); }
+  .k.open { background: #f4eee2; border: 1px solid #cdbfa6; }
+
+  @media (max-width: 600px) {
+    .world-map { height: min(var(--h), 108vw); }
+    .hint { display: none; }
+    .status { position: static; width: auto; margin-top: 10px; box-shadow: none; display: grid; grid-template-columns: auto 1fr; column-gap: 14px; align-items: center; }
+    .status .pct { grid-row: span 2; }
+    .status .pct-label { margin: 0; }
+    .status .bar, .status dl, .status .key { grid-column: 1 / -1; }
+    .status .bar { margin-top: 10px; }
+  }
 </style>
 
 <style is:global>
-  .dot-pin { width: 26px; height: 34px; padding: 0; border: 0; background: none; cursor: pointer; filter: drop-shadow(0 2px 3px rgba(40, 30, 10, 0.35)); }
+  .dot-pin { width: 24px; height: 32px; padding: 0; border: 0; background: none; cursor: pointer; filter: drop-shadow(0 2px 3px rgba(40, 30, 10, 0.35)); }
+  .dot-pin.small { width: 18px; height: 24px; }
   .dot-pin svg { width: 100%; height: 100%; display: block; }
   .dot-pin:hover, .dot-pin:focus-visible { transform: translateY(-2px); }
-  .maplibregl-popup-content { background: var(--linen); border-radius: 4px; padding: 10px; box-shadow: var(--shadow); font-family: var(--font); }
+  .maplibregl-popup-content { background: var(--linen); border-radius: 4px; padding: 10px 12px; box-shadow: var(--shadow); font-family: var(--font); }
   .maplibregl-popup-tip { border-top-color: var(--linen) !important; border-bottom-color: var(--linen) !important; }
-  .pop { width: 190px; }
+  .pop { max-width: 190px; }
   .pop .pimg { aspect-ratio: 4 / 3; background: #ddd2bd; overflow: hidden; margin-bottom: 8px; }
   .pop .pimg img { width: 100%; height: 100%; object-fit: cover; }
-  .pop .pt { font-family: var(--hand); font-size: 1.55rem; line-height: 1.05; margin: 0 0 2px; color: var(--ink); }
-  .pop .ps { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 8px; }
-  .pop a { font-weight: 600; font-size: 0.9rem; }
+  .pop .pt { font-family: var(--hand); font-size: 1.55rem; line-height: 1.05; margin: 0; color: var(--ink); }
+  .pop .ps { font-size: 0.85rem; color: var(--ink-soft); margin: 2px 0 0; }
+  .pop a { display: inline-block; margin-top: 8px; font-weight: 600; font-size: 0.9rem; }
   .maplibregl-ctrl-attrib { background: rgba(248, 243, 234, 0.8) !important; font-size: 10px; }
   .maplibregl-cooperative-gesture-screen { font-family: var(--font); background: rgba(43, 42, 38, 0.55); }
 </style>
@@ -60,6 +118,9 @@ const tr = t(lang);
   import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
   import { feature } from 'topojson-client';
 
+  type Pin = { lat: number; lng: number; title: string; sub: string; href: string; image: string; kind: 'stop' | 'entry' | 'place' };
+  type Data = { countries: string[]; states: string[]; pins: Pin[]; routes: { coords: [number, number][] }[] };
+
   let libPromise: Promise<typeof import('maplibre-gl')> | null = null;
   const loadLib = () =>
     (libPromise ??= import('maplibre-gl').then((m) => {
@@ -67,74 +128,96 @@ const tr = t(lang);
       return m;
     }));
 
-  type Pin = { lat: number; lng: number; title: string; sub: string; href: string; image: string; kind: 'stop' | 'entry' };
-  type Data = { countries: string[]; pins: Pin[]; routes: { coords: [number, number][] }[] };
+  // Ringe über der Datumsgrenze (Russland, Fidschi, Alaska) zusammenhalten
+  const fixRing = (ring: number[][]) => {
+    const crosses = ring.some((c) => c[0] > 170) && ring.some((c) => c[0] < -170);
+    return crosses ? ring.map((c) => [c[0] < 0 ? c[0] + 360 : c[0], c[1]]) : ring;
+  };
+  const polys = (g: any): number[][][][] => (g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : []);
+  const inBox = (poly: number[][][], b: number[]) => poly[0].every(([x, y]) => x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]);
 
-  let worldPromise: Promise<any> | null = null;
+  // Überseegebiete nicht einfärben, wenn nur das Mutterland bereist wurde (z. B. Französisch-Guayana)
+  const MAINLAND: Record<string, number[]> = { '250': [-6, 41, 10, 52], '528': [3, 50, 8, 54] };
+
+  let worldPromise: Promise<{ countries: any; states: any }> | null = null;
   function loadWorld() {
-    worldPromise ??= fetch('/map/countries-50m.json')
-      .then((r) => r.json())
-      .then((topo) => {
-        const fc: any = feature(topo, topo.objects.countries);
-        // Antarktis weglassen, Länder über der Datumsgrenze (Russland, Fidschi) korrekt zusammenhalten
-        fc.features = fc.features.filter((f: any) => f.id !== '010');
-        const fixRing = (ring: number[][]) => {
-          const crosses = ring.some((c) => c[0] > 170) && ring.some((c) => c[0] < -170);
-          return crosses ? ring.map((c) => [c[0] < 0 ? c[0] + 360 : c[0], c[1]]) : ring;
-        };
-        fc.features.forEach((f: any) => {
-          f.properties = { ...(f.properties || {}), iso: String(f.id ?? '') };
-          const g = f.geometry;
-          if (!g) return;
-          if (g.type === 'Polygon') g.coordinates = g.coordinates.map(fixRing);
-          if (g.type === 'MultiPolygon') g.coordinates = g.coordinates.map((poly: number[][][]) => poly.map(fixRing));
-        });
-        return fc;
+    worldPromise ??= Promise.all([
+      fetch('/map/countries-50m.json').then((r) => r.json()),
+      fetch('/map/us-states-10m.json').then((r) => r.json()),
+    ]).then(([topo, us]) => {
+      const out: any[] = [];
+      (feature(topo, topo.objects.countries) as any).features.forEach((f: any) => {
+        const iso = String(f.id ?? '');
+        if (iso === '010' || !f.geometry) return; // Antarktis weglassen
+        const parts = polys(f.geometry).map((p) => p.map(fixRing));
+        const box = MAINLAND[iso];
+        if (box) {
+          const main = parts.filter((p) => inBox(p, box));
+          const rest = parts.filter((p) => !inBox(p, box));
+          out.push({ type: 'Feature', properties: { iso }, geometry: { type: 'MultiPolygon', coordinates: main } });
+          if (rest.length) out.push({ type: 'Feature', properties: { iso: iso + '-x' }, geometry: { type: 'MultiPolygon', coordinates: rest } });
+        } else {
+          out.push({ type: 'Feature', properties: { iso }, geometry: { type: 'MultiPolygon', coordinates: parts } });
+        }
       });
+      const states = (feature(us, us.objects.states) as any).features.map((f: any) => ({
+        type: 'Feature',
+        properties: { fips: String(f.id ?? '') },
+        geometry: { type: 'MultiPolygon', coordinates: polys(f.geometry).map((p) => p.map(fixRing)) },
+      }));
+      return { countries: { type: 'FeatureCollection', features: out }, states: { type: 'FeatureCollection', features: states } };
+    });
     return worldPromise;
   }
 
   const css = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const PIN_COLORS: Record<Pin['kind'], string> = { stop: '#2c5f5d', place: '#2c5f5d', entry: '#c98f84' };
 
   function pinSvg(kind: Pin['kind']) {
-    const fill = kind === 'entry' ? '#c98f84' : css('--sea');
-    return `<svg viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1C6 1 1.5 5.4 1.5 11.2 1.5 19 12 31 12 31s10.5-12 10.5-19.8C22.5 5.4 18 1 12 1z" fill="${fill}" stroke="#f8f3ea" stroke-width="1.5"/><circle cx="12" cy="11" r="4" fill="#f8f3ea"/></svg>`;
+    return `<svg viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1C6 1 1.5 5.4 1.5 11.2 1.5 19 12 31 12 31s10.5-12 10.5-19.8C22.5 5.4 18 1 12 1z" fill="${PIN_COLORS[kind]}" stroke="#f8f3ea" stroke-width="1.5"/><circle cx="12" cy="11" r="4" fill="#f8f3ea"/></svg>`;
   }
-
-  function esc(s: string) {
-    return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
-  }
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
   async function init(el: HTMLElement) {
     const data: Data = JSON.parse(el.dataset.map || '{}');
     const lang = el.dataset.lang;
     const [maplibregl, world] = await Promise.all([loadLib(), loadWorld()]);
-    const narrow = el.clientWidth < 640;
+    const w = el.clientWidth;
+    const h = el.clientHeight;
+    // Globus so gross, dass er die Höhe gut füllt
+    const worldZoom = Math.log2(Math.min(w, h) / 165);
+
+    // Wenn Bundesstaaten erfasst sind, werden die USA über die Staaten eingefärbt
+    const countryFill = data.states.length ? data.countries.filter((c) => c !== '840') : data.countries;
 
     const map = new maplibregl.Map({
       container: el,
-      center: [18, 12],
-      zoom: narrow ? 0.25 : 1.05,
-      minZoom: 0,
+      center: [14, 22],
+      zoom: worldZoom,
+      minZoom: Math.max(worldZoom - 1, -1),
       maxZoom: 9,
       renderWorldCopies: false,
       cooperativeGestures: true,
       dragRotate: false,
       pitchWithRotate: false,
-      attributionControl: { compact: true, customAttribution: 'Karte: Natural Earth' },
-      locale: lang === 'de'
-        ? {
-            'CooperativeGesturesHandler.WindowsHelpText': 'Strg + Mausrad zum Zoomen',
-            'CooperativeGesturesHandler.MacHelpText': '⌘ + Mausrad zum Zoomen',
-            'CooperativeGesturesHandler.MobileHelpText': 'Mit zwei Fingern bewegen',
-            'NavigationControl.ZoomIn': 'Hineinzoomen',
-            'NavigationControl.ZoomOut': 'Herauszoomen',
-          }
-        : undefined,
+      attributionControl: { compact: true, customAttribution: 'Karte: Natural Earth, US Census' },
+      locale:
+        lang === 'de'
+          ? {
+              'CooperativeGesturesHandler.WindowsHelpText': 'Strg + Mausrad zum Zoomen',
+              'CooperativeGesturesHandler.MacHelpText': '⌘ + Mausrad zum Zoomen',
+              'CooperativeGesturesHandler.MobileHelpText': 'Mit zwei Fingern bewegen',
+              'NavigationControl.ZoomIn': 'Hineinzoomen',
+              'NavigationControl.ZoomOut': 'Herauszoomen',
+            }
+          : undefined,
       style: {
         version: 8,
+        projection: { type: 'globe' },
+        sky: { 'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 0.55, 4, 0.2, 6, 0] },
         sources: {
-          world: { type: 'geojson', data: world },
+          countries: { type: 'geojson', data: world.countries },
+          states: { type: 'geojson', data: world.states },
           routes: {
             type: 'geojson',
             data: {
@@ -145,15 +228,29 @@ const tr = t(lang);
         },
         layers: [
           { id: 'sea', type: 'background', paint: { 'background-color': css('--seaglass') } },
-          { id: 'land', type: 'fill', source: 'world', paint: { 'fill-color': '#f4eee2' } },
+          { id: 'land', type: 'fill', source: 'countries', paint: { 'fill-color': '#f4eee2' } },
           {
             id: 'visited',
             type: 'fill',
-            source: 'world',
-            filter: ['in', ['get', 'iso'], ['literal', data.countries]],
-            paint: { 'fill-color': css('--blush'), 'fill-opacity': 0.75 },
+            source: 'countries',
+            filter: ['in', ['get', 'iso'], ['literal', countryFill]],
+            paint: { 'fill-color': css('--blush'), 'fill-opacity': 0.85 },
           },
-          { id: 'borders', type: 'line', source: 'world', paint: { 'line-color': '#cdbfa6', 'line-width': 0.6 } },
+          {
+            id: 'states-visited',
+            type: 'fill',
+            source: 'states',
+            filter: ['in', ['get', 'fips'], ['literal', data.states]],
+            paint: { 'fill-color': css('--blush'), 'fill-opacity': 0.85 },
+          },
+          { id: 'borders', type: 'line', source: 'countries', paint: { 'line-color': '#cdbfa6', 'line-width': 0.6 } },
+          {
+            id: 'state-borders',
+            type: 'line',
+            source: 'states',
+            layout: { visibility: data.states.length ? 'visible' : 'none' },
+            paint: { 'line-color': '#cdbfa6', 'line-width': 0.5 },
+          },
           {
             id: 'route',
             type: 'line',
@@ -162,38 +259,64 @@ const tr = t(lang);
             paint: { 'line-color': css('--sea'), 'line-width': 2, 'line-dasharray': [1.5, 2] },
           },
         ],
-      },
+      } as any,
     });
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
+    (el as any).__map = map;
 
     for (const p of data.pins) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'dot-pin';
+      btn.className = p.kind === 'place' ? 'dot-pin small' : 'dot-pin';
       btn.setAttribute('aria-label', p.title);
       btn.innerHTML = pinSvg(p.kind);
       const img = p.image ? `<div class="pimg"><img src="${esc(p.image)}" alt="" loading="lazy"></div>` : '';
-      const popup = new maplibregl.Popup({ offset: 30, closeButton: false, maxWidth: '220px' }).setHTML(
-        `<div class="pop">${img}<p class="pt">${esc(p.title)}</p>${p.sub ? `<p class="ps">${esc(p.sub)}</p>` : ''}<a href="${esc(p.href)}">${esc(el.dataset.open || 'Open')}</a></div>`,
+      const link = p.href ? `<a href="${esc(p.href)}">${esc(el.dataset.open || 'Open')}</a>` : '';
+      const popup = new maplibregl.Popup({ offset: p.kind === 'place' ? 22 : 30, closeButton: false, maxWidth: '220px' }).setHTML(
+        `<div class="pop">${img}<p class="pt">${esc(p.title)}</p>${p.sub ? `<p class="ps">${esc(p.sub)}</p>` : ''}${link}</div>`,
       );
-      new maplibregl.Marker({ element: btn, anchor: 'bottom' }).setLngLat([p.lng, p.lat]).setPopup(popup).addTo(map);
+      new maplibregl.Marker({ element: btn, anchor: 'bottom', opacityWhenCovered: '0' }).setLngLat([p.lng, p.lat]).setPopup(popup).addTo(map);
     }
 
     if (el.dataset.mode === 'fit' && data.pins.length) {
       const b = new maplibregl.LngLatBounds();
       data.pins.forEach((p) => b.extend([p.lng, p.lat]));
       map.fitBounds(b, { padding: { top: 60, bottom: 40, left: 40, right: 40 }, maxZoom: 6, duration: 0 });
+      return;
     }
+
+    // Langsame Drehung, bis jemand mit dem Globus interagiert
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still) return;
+    let spinning = true;
+    let visible = true;
+    const stop = () => (spinning = false);
+    ['mousedown', 'touchstart', 'wheel', 'keydown'].forEach((ev) => el.addEventListener(ev, stop, { passive: true, once: true }));
+    map.on('dragstart', stop);
+    map.on('zoomstart', (e: any) => e.originalEvent && stop());
+    new IntersectionObserver(([it]) => (visible = it.isIntersecting)).observe(el);
+    let last = 0;
+    const tick = (ts: number) => {
+      if (!spinning) return;
+      if (visible && last) {
+        const c = map.getCenter();
+        map.setCenter([c.lng - (ts - last) * 0.004, c.lat]);
+      }
+      last = ts;
+      requestAnimationFrame(tick);
+    };
+    map.once('idle', () => requestAnimationFrame(tick));
   }
 
-  const maps = document.querySelectorAll<HTMLElement>('.world-map');
-  const io = new IntersectionObserver((items) => {
-    items.forEach((it) => {
-      if (it.isIntersecting) {
-        io.unobserve(it.target);
-        init(it.target as HTMLElement);
-      }
-    });
-  }, { rootMargin: '200px' });
-  maps.forEach((m) => io.observe(m));
+  const io = new IntersectionObserver(
+    (items) =>
+      items.forEach((it) => {
+        if (it.isIntersecting) {
+          io.unobserve(it.target);
+          init(it.target as HTMLElement);
+        }
+      }),
+    { rootMargin: '200px' },
+  );
+  document.querySelectorAll<HTMLElement>('.world-map').forEach((m) => io.observe(m));
 </script>
