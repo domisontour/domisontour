@@ -15,7 +15,25 @@ const other: Lang = lang === 'de' ? 'en' : 'de';
 const trips = await getTrips();
 const entries = await getEntries();
 const mapData = buildMapData(trips, entries, lang, { withPlaces: true });
-const stack: (typeof trips[number] | null)[] = trips.slice(0, 3);
+// Deutsche Links auf der englischen Seite automatisch umschreiben
+const localize = (href: string) => {
+  if (lang === 'de' || !href.startsWith('/') || href.startsWith('/en/')) return href;
+  return '/en' + href.replace(/^\/reisen\//, '/trips/').replace(/^\/tagebuch\//, '/diary/').replace(/^\/karte\//, '/map/').replace(/^\/ueber-uns\//, '/about/');
+};
+// Polaroids oben rechts: zuerst die im Upload-Panel gewählten Fotos, dann neueste Reisen, dann Platzhalter
+type Card = { img: string; cap: string; href: string } | null;
+const chosen: Card[] = ((site as any).hero ?? [])
+  .filter((h: any) => h?.image)
+  .slice(0, 3)
+  .map((h: any) => ({
+    img: h.image,
+    cap: (lang === 'en' && h.caption_en) || h.caption_de || '',
+    href: localize(h.link || ''),
+  }));
+const stack: Card[] = [
+  ...chosen,
+  ...trips.map((trip) => ({ img: trip.data.cover, cap: pick(trip.data, 'title', lang), href: path('trips', lang, trip.id) })),
+].slice(0, 3);
 while (stack.length < 3) stack.push(null);
 const about = pick(site, 'about', lang).split('\n\n')[0];
 ---
@@ -31,12 +49,19 @@ const about = pick(site, 'about', lang).split('\n\n')[0];
       </div>
     </div>
     <div class="stack">
-      {stack.map((trip, i) =>
-        trip ? (
-          <a class={`polaroid p${i}`} href={path('trips', lang, trip.id)}>
-            <div class="ph"><Photo src={trip.data.cover} alt={pick(trip.data, 'title', lang)} label={tr.photo_soon} tone={i} eager /></div>
-            <span class="cap">{pick(trip.data, 'title', lang)}</span>
-          </a>
+      {stack.map((card, i) =>
+        card ? (
+          card.href ? (
+            <a class={`polaroid p${i}`} href={card.href}>
+              <div class="ph"><Photo src={card.img} alt={card.cap} label={tr.photo_soon} tone={i} eager /></div>
+              <span class="cap">{card.cap}</span>
+            </a>
+          ) : (
+            <div class={`polaroid p${i}`}>
+              <div class="ph"><Photo src={card.img} alt={card.cap} label={tr.photo_soon} tone={i} eager /></div>
+              <span class="cap">{card.cap}</span>
+            </div>
+          )
         ) : (
           <div class={`polaroid p${i}`} aria-hidden="true">
             <div class="ph"><Photo alt="" tone={i + 1} /></div>

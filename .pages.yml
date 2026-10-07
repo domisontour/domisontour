@@ -244,6 +244,30 @@ content:
         type: rich-text
         options:
           format: markdown
+      - name: hero
+        label: Fotos oben auf der Startseite (max. 3 Polaroids)
+        type: object
+        description: "Reihenfolge: 1 = vorne rechts, 2 = links, 3 = hinten unten. Leer lassen = neueste Reisen werden gezeigt."
+        list:
+          max: 3
+          collapsible:
+            collapsed: true
+            summary: "{index}: {fields.caption_de}"
+        fields:
+          - name: image
+            label: Foto
+            type: image
+            required: true
+          - name: caption_de
+            label: Text auf dem Polaroid (Deutsch)
+            type: string
+          - name: caption_en
+            label: Text auf dem Polaroid (Englisch)
+            type: string
+          - name: link
+            label: Link beim Antippen (optional)
+            type: string
+            description: "z. B. /reisen/suedafrika-2026/ (leer lassen = kein Link)"
       - name: photo_herr
         label: Foto Herr Domi
         type: image
