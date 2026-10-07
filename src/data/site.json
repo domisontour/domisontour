@@ -1,31 +1,6 @@
 {
-  "instagram": "https://www.instagram.com/domis_on_tour/",
-  "tiktok": "",
-  "youtube": "",
-  "rednote": "",
-  "email": "",
   "about_de": "Wir sind Dominique und Dominique. Ja, wirklich, beide. Darum nennen uns alle einfach die Domis: Herr Domi und Frou Domi.\n\nWir leben in der Schweiz und reisen am liebsten dorthin, wo Küste, Wildlife und Natur zusammenkommen. Safaris, Wale, Roadtrips und kleine Orte, die man nicht im ersten Reiseführer findet.\n\nAuf dieser Seite halten wir fest, was wir erleben, und teilen, was euch bei der Planung wirklich hilft: Routen, ehrliche Einschätzungen und unsere Lieblingsspots.",
   "about_en": "We are Dominique and Dominique. Yes, really, both of us. That is why everyone just calls us the Domis: Herr Domi and Frou Domi.\n\nWe live in Switzerland and love places where coastline, wildlife and nature meet. Safaris, whales, road trips and small spots you will not find in the first guidebook.\n\nThis is where we write down what we experience and share what genuinely helps you plan: routes, honest takes and our favourite spots.",
-  "photo_herr": "",
-  "photo_frou": "",
-  "hero": [
-    {
-      "image": "/uploads/kapstadt-tafelberg.jpg",
-      "caption_de": "Kapstadt",
-      "caption_en": "Cape Town",
-      "link": "/reisen/suedafrika-2026/"
-    },
-    {
-      "image": "/uploads/london-eye.jpg",
-      "caption_de": "London",
-      "caption_en": "London",
-      "link": ""
-    },
-    {
-      "image": "/uploads/london-bunte-haeuser.jpg",
-      "caption_de": "London",
-      "caption_en": "London",
-      "link": ""
-    }
-  ]
+  "photo_herr": "/uploads/20260923064731790ios.jpg",
+  "instagram": "https://www.instagram.com/domis_on_tour/"
 }
