@@ -1,4 +1,8 @@
 {
+  "hero_title_de": "Zwei Domis, ein Rucksack voller Notizen.",
+  "hero_title_en": "Two Domis, one backpack full of notes.",
+  "hero_lead_de": "Wir sind ein Schweizer Reisepaar. Hier sammeln wir unsere Routen, Tagebucheinträge und Tipps, damit eure nächste Reise einfacher wird.",
+  "hero_lead_en": "We are a Swiss travel couple. This is where we keep our routes, diary entries and tips, so your next trip gets a little easier.",
   "hero": [
     {
       "image": "/uploads/kapstadt-tafelberg.jpg",
@@ -19,8 +23,8 @@
       "link": ""
     }
   ],
-  "about_de": "Wir sind Dominique und Dominique. Ja, wirklich, beide. Darum nennen uns alle einfach: Herr Domi und Frou Domi.\n\nWir leben in der Schweiz und reisen am liebsten dorthin, wo Küste, Wildlife und Natur zusammenkommen. Safaris, Wale, Roadtrips und kleine Orte, die man nicht im ersten Reiseführer findet.\n\nAuf dieser Seite halten wir fest, was wir erleben, und teilen, was euch bei der Planung wirklich hilft: Routen, ehrliche Einschätzungen und unsere Lieblingsspots.",
-  "about_en": "We are Dominique and Dominique. Yes, really, both of us. That is why everyone just calls us: Mister Domi and Misses Domi.\n\nWe live in Switzerland and love places where coastline, wildlife and nature meet. Safaris, whales, road trips and small spots you will not find in the first guidebook.\n\nThis is where we write down what we experience and share what genuinely helps you plan: routes, honest takes and our favourite spots.",
+  "about_de": "Wir sind Dominique und Dominique. Ja, wirklich, beide. Darum nennen uns alle einfach: Herr Domi und Frou Domi.\n\nWir leben in der Schweiz und reisen am liebsten dorthin, wo Küste, Wildlife und Natur zusammenkommen. Safaris, Wale, Roadtrips und kleine Orte, die man nicht im ersten Reiseführer findet.\n\nAuf dieser Seite halten wir fest, was wir erleben, und teilen, was euch bei der Planung wirklich hilft: Routen, ehrliche Einschätzungen und unsere Lieblingsspots.\n\nUnd dann ist da noch **Oreo**, unsere Katze. Oreo hütet zu Hause die Stellung, während wir unterwegs sind, und ist nach jeder Reise das schönste Willkommen.",
+  "about_en": "We are Dominique and Dominique. Yes, really, both of us. That is why everyone just calls us: Mister Domi and Misses Domi.\n\nWe live in Switzerland and love places where coastline, wildlife and nature meet. Safaris, whales, road trips and small spots you will not find in the first guidebook.\n\nThis is where we write down what we experience and share what genuinely helps you plan: routes, honest takes and our favourite spots.\n\nAnd then there is **Oreo**, our cat. Oreo holds the fort at home while we are away and is the best welcome back after every trip.",
   "photo_herr": "/uploads/20260923064731790ios.jpg",
   "instagram": "https://www.instagram.com/domis_on_tour/",
   "photo_couple": "/uploads/kapstadt-tafelberg.jpg",
@@ -53,5 +57,6 @@
       "url": "https://www.rentalcars.com",
       "icon": "car"
     }
-  ]
+  ],
+  "photo_oreo": ""
 }

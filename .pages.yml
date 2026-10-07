@@ -384,6 +384,18 @@ content:
         type: rich-text
         options:
           format: markdown
+      - name: hero_title_de
+        label: Startseite Überschrift (Deutsch)
+        type: string
+      - name: hero_title_en
+        label: Startseite Überschrift (Englisch)
+        type: string
+      - name: hero_lead_de
+        label: Startseite Einleitungstext (Deutsch)
+        type: text
+      - name: hero_lead_en
+        label: Startseite Einleitungstext (Englisch)
+        type: text
       - name: hero
         label: Fotos oben auf der Startseite (max. 3 Polaroids)
         type: object
@@ -436,6 +448,9 @@ content:
             type: select
             options:
               values: [plane, bed, ticket, car, link]
+      - name: photo_oreo
+        label: Foto Oreo
+        type: image
       - name: photo_herr
         label: Foto Herr Domi
         type: image

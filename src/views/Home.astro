@@ -41,8 +41,8 @@ const about = pick(site, 'about', lang).split('\n\n')[0];
   <section class="hero wrap">
     <div class="hero-text">
       <img class="hero-logo" src="/logo.jpg" alt="Domi's on Tour – live a life you will remember" width="564" height="336" fetchpriority="high" />
-      <h1>{tr.hero_title}</h1>
-      <p class="lead">{tr.hero_lead}</p>
+      <h1>{pick(site, 'hero_title', lang) || tr.hero_title}</h1>
+      <p class="lead">{pick(site, 'hero_lead', lang) || tr.hero_lead}</p>
       <div class="ctas">
         <a class="btn" href="#karte">{tr.hero_cta_map}</a>
         <a class="btn ghost" href={path('trips', lang)}>{tr.hero_cta_trips}</a>
