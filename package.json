@@ -24,6 +24,7 @@
     "world-atlas": "^2.0.2"
   },
   "devDependencies": {
+    "polylabel": "^2.1.0",
     "wrangler": "^4.148.0"
   },
   "engines": {

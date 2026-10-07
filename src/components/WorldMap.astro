@@ -198,6 +198,8 @@ const de = lang === 'de';
 
     // Wenn Bundesstaaten erfasst sind, werden die USA über die Staaten eingefärbt
     const usByStates = data.states.length > 0 || data.plannedStates.length > 0;
+    // Bereiste und geplante Länder werden etwas kräftiger beschriftet
+    const marked = [...data.countries, ...data.plannedCountries];
     const countryFill = usByStates ? data.countries.filter((c) => c !== '840') : data.countries;
 
     const map = new maplibregl.Map({
@@ -224,9 +226,11 @@ const de = lang === 'de';
       style: {
         version: 8,
         projection: { type: 'globe' },
+        glyphs: '/fonts/{fontstack}/{range}.pbf',
         sky: { 'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 0.55, 4, 0.2, 6, 0] },
         sources: {
           countries: { type: 'geojson', data: world.countries },
+          labels: { type: 'geojson', data: '/map/labels.json' },
           states: { type: 'geojson', data: world.states },
           routes: {
             type: 'geojson',
@@ -281,6 +285,43 @@ const de = lang === 'de';
             source: 'routes',
             layout: { 'line-cap': 'round', 'line-join': 'round' },
             paint: { 'line-color': css('--gold'), 'line-width': 2, 'line-dasharray': [1.5, 2] },
+          },
+          // Dezente Länderbeschriftung: grosse Länder zuerst, kleinere beim Hineinzoomen
+          ...[
+            { id: 'label-l1', minz: 0, minzoom: 0 },
+            { id: 'label-l2', minz: 2.4, minzoom: 2.4 },
+            { id: 'label-l3', minz: 3.4, minzoom: 3.4 },
+            { id: 'label-l4', minz: 4.6, minzoom: 4.6 },
+          ].map((l) => ({
+            id: l.id,
+            type: 'symbol',
+            source: 'labels',
+            minzoom: l.minzoom,
+            filter: ['all', ['==', ['get', 'minz'], l.minz], ['!', ['in', ['get', 'iso'], ['literal', marked]]]],
+            layout: {
+              'text-field': ['get', lang === 'de' ? 'de' : 'en'],
+              'text-font': ['Noto Sans Regular'],
+              'text-size': ['interpolate', ['linear'], ['zoom'], 1, 9, 4, 12, 6, 14],
+              'text-letter-spacing': 0.04,
+              'text-max-width': 7,
+              'symbol-sort-key': ['-', 0, ['get', 'area']],
+            },
+            paint: { 'text-color': '#a49a8f', 'text-halo-color': 'rgba(253, 251, 249, 0.85)', 'text-halo-width': 1 },
+          })),
+          {
+            id: 'label-marked',
+            type: 'symbol',
+            source: 'labels',
+            filter: ['in', ['get', 'iso'], ['literal', marked]],
+            layout: {
+              'text-field': ['get', lang === 'de' ? 'de' : 'en'],
+              'text-font': ['Noto Sans Regular'],
+              'text-size': ['interpolate', ['linear'], ['zoom'], 1, 10, 4, 13, 6, 15],
+              'text-letter-spacing': 0.04,
+              'text-max-width': 7,
+              'symbol-sort-key': ['-', 0, ['get', 'area']],
+            },
+            paint: { 'text-color': '#6f5326', 'text-halo-color': 'rgba(253, 251, 249, 0.9)', 'text-halo-width': 1.2 },
           },
         ],
       } as any,
