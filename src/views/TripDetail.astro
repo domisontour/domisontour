@@ -111,6 +111,6 @@ const facts = [
   @media (max-width: 860px) { .route-grid { grid-template-columns: 1fr; } }
   .stops { margin: 0; padding: 0; list-style: none; counter-reset: s; }
   .stops li { counter-increment: s; position: relative; padding: 0 0 22px 46px; display: flex; flex-direction: column; }
-  .stops li::before { content: counter(s); position: absolute; left: 0; top: -2px; width: 30px; height: 30px; border-radius: 50%; background: var(--sea); color: var(--linen); display: grid; place-items: center; font-size: 0.85rem; font-weight: 700; }
+  .stops li::before { content: counter(s); position: absolute; left: 0; top: -2px; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--linen); display: grid; place-items: center; font-size: 0.85rem; font-weight: 700; }
   .stops li:not(:last-child)::after { content: ''; position: absolute; left: 14px; top: 32px; bottom: 2px; border-left: 2px dashed var(--line); }
 </style>

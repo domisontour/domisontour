@@ -2,7 +2,7 @@
 // Zeigt ein Foto oder, falls noch keins hochgeladen ist, einen ruhigen Platzhalter
 interface Props { src?: string; alt: string; label?: string; eager?: boolean; tone?: number }
 const { src, alt, label = '', eager = false, tone = 0 } = Astro.props;
-const tones = ['#dccfb6', '#cfdcd4', '#e6cfc6', '#d6dabf'];
+const tones = ['#e2d8cc', '#dcd6d0', '#e6dccd', '#d9d6cb'];
 const bg = tones[Math.abs(tone) % tones.length];
 ---
 {src ? (

@@ -1,22 +1,35 @@
 @import '@fontsource-variable/figtree';
-@import '@fontsource/reenie-beanie';
+@import '@fontsource/libre-caslon-text/400.css';
+@import '@fontsource/libre-caslon-text/700.css';
+
+/* Schreibschrift im Stil der Logo-Zeile „live a life you will remember“, gut lesbar */
+@font-face {
+  font-family: 'Domi Script';
+  src: url('@fontsource/allura/files/allura-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  size-adjust: 112%;
+}
 
 :root {
-  /* Farben Domis on Tour */
-  --sand: #ece3d2;        /* Seitenhintergrund */
-  --linen: #f8f3ea;       /* Polaroid-Rahmen, Karten */
-  --ink: #2b2a26;         /* Text */
-  --ink-soft: #625d53;    /* Nebentext */
-  --sea: #2c5f5d;         /* Links, Buttons, Routen */
-  --seaglass: #c9ddd6;    /* Wasser auf der Karte */
-  --blush: #e4b9b0;       /* bereiste Länder */
-  --sage: #b9c19f;        /* Akzente, Doodles */
-  --line: #d6cab4;        /* feine Linien */
+  /* Farben aus dem Domi's-on-Tour-Logo */
+  --sand: #ece7e3;        /* Seitenhintergrund (exakt wie im Logo) */
+  --linen: #fdfbf9;       /* Polaroid-Rahmen, Karten (Weiss des Logos) */
+  --ink: #2d2d2d;         /* Text, Buttons (Schrift im Logo) */
+  --ink-soft: #6b6560;    /* Nebentext */
+  --gold: #c6964f;        /* Gold-Linie im Logo: Akzente, Linien */
+  --gold-deep: #7e5e2b;   /* dunkleres Gold für Text und Links (gut lesbar) */
+  --sea: var(--gold-deep);/* Akzentfarbe (Name aus erster Version) */
+  --seaglass: #e3dcd5;    /* Meer auf dem Globus */
+  --blush: #dcb67a;       /* bereiste Länder (helles Gold) */
+  --sage: #c4c8ad;        /* geplante Länder */
+  --line: #d9cfc4;        /* feine Linien */
 
   --font: 'Figtree Variable', system-ui, sans-serif;
-  --hand: 'Reenie Beanie', 'Bradley Hand', cursive;
+  --serif: 'Libre Caslon Text', Georgia, serif;
+  --hand: 'Domi Script', 'Snell Roundhand', cursive;
 
-  --shadow: 0 1px 2px rgba(60, 45, 20, 0.08), 0 8px 24px -6px rgba(60, 45, 20, 0.18);
+  --shadow: 0 1px 2px rgba(45, 35, 25, 0.06), 0 10px 26px -8px rgba(45, 35, 25, 0.18);
   --radius: 14px;
   --wrap: 1180px;
   --gutter: clamp(16px, 4vw, 40px);
@@ -38,28 +51,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* leichte Papierstruktur */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background-image: radial-gradient(rgba(90, 70, 40, 0.05) 1px, transparent 1px);
-  background-size: 4px 4px;
-}
 
 img { max-width: 100%; display: block; }
 
-a { color: var(--sea); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a { color: var(--gold-deep); text-underline-offset: 3px; text-decoration-thickness: 1px; }
 a:hover { text-decoration-thickness: 2px; }
 
-:focus-visible { outline: 2px solid var(--sea); outline-offset: 3px; border-radius: 4px; }
+:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 3px; border-radius: 4px; }
 
-h1, h2, h3 { line-height: 1.12; letter-spacing: -0.02em; margin: 0 0 0.5em; font-weight: 700; }
-h1 { font-size: clamp(2.3rem, 5.5vw, 4.2rem); letter-spacing: -0.035em; }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 0.5em; font-weight: 400; }
+h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); letter-spacing: -0.02em; }
 h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
-h3 { font-size: 1.25rem; letter-spacing: -0.01em; }
+h3 { font-size: 1.22rem; }
 p { margin: 0 0 1em; }
 
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
@@ -76,12 +79,12 @@ p { margin: 0 0 1em; }
   display: inline-flex; align-items: center; gap: 8px;
   padding: 12px 22px; border-radius: 999px;
   font: 600 1rem/1 var(--font); text-decoration: none;
-  background: var(--sea); color: var(--linen); border: 1.5px solid var(--sea);
+  background: var(--ink); color: var(--linen); border: 1.5px solid var(--ink);
   transition: background 0.15s, color 0.15s;
 }
-.btn:hover { background: #224b49; }
-.btn.ghost { background: transparent; color: var(--sea); }
-.btn.ghost:hover { background: rgba(44, 95, 93, 0.08); }
+.btn:hover { background: #000; }
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.ghost:hover { background: rgba(45, 45, 45, 0.06); }
 
 /* Polaroid */
 .polaroid {
@@ -90,7 +93,7 @@ p { margin: 0 0 1em; }
   box-shadow: var(--shadow);
   border-radius: 3px;
 }
-.polaroid .ph { aspect-ratio: 1 / 1; overflow: hidden; background: #ddd2bd; }
+.polaroid .ph { aspect-ratio: 1 / 1; overflow: hidden; background: #e2dbd3; }
 .polaroid .ph img { width: 100%; height: 100%; object-fit: cover; }
 .polaroid figcaption, .polaroid .cap {
   font-family: var(--hand);
@@ -106,11 +109,11 @@ p { margin: 0 0 1em; }
 .prose img { border-radius: 6px; margin: 1.5em 0; box-shadow: var(--shadow); }
 .prose h2 { font-size: 1.6rem; margin-top: 1.6em; }
 .prose h3 { margin-top: 1.4em; }
-.prose blockquote { margin: 1.5em 0; padding-left: 18px; border-left: 3px solid var(--sage); color: var(--ink-soft); }
+.prose blockquote { margin: 1.5em 0; padding-left: 18px; border-left: 3px solid var(--gold); color: var(--ink-soft); }
 
 .note {
   display: inline-block; font-size: 0.95rem; color: var(--ink-soft);
-  background: rgba(185, 193, 159, 0.3); padding: 6px 12px; border-radius: 8px; margin-bottom: 1.2em;
+  background: rgba(198, 150, 79, 0.14); padding: 6px 12px; border-radius: 8px; margin-bottom: 1.2em;
 }
 
 @media (prefers-reduced-motion: reduce) {

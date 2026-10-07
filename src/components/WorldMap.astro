@@ -64,22 +64,22 @@ const de = lang === 'de';
   .map-frame { position: relative; background: var(--linen); padding: 10px; border-radius: 6px; box-shadow: var(--shadow); }
   .world-map {
     height: var(--h); border-radius: 3px; overflow: hidden;
-    background: radial-gradient(circle at 50% 50%, #f4ecdd 0%, #e9dfcc 55%, #e2d6bf 100%);
+    background: radial-gradient(circle at 50% 50%, #f6f2ee 0%, #ece7e3 55%, #e4ddd6 100%);
   }
   .hint { position: absolute; left: 22px; bottom: 18px; margin: 0; font-size: 0.8rem; color: var(--ink-soft); background: rgba(248, 243, 234, 0.85); padding: 3px 10px; border-radius: 999px; pointer-events: none; }
 
   .status {
     position: absolute; top: 22px; right: 22px; width: 196px;
-    background: rgba(248, 243, 234, 0.94); border-radius: 10px; padding: 14px 16px 12px;
+    background: rgba(253, 251, 249, 0.95); border-radius: 10px; padding: 14px 16px 12px;
     box-shadow: 0 6px 18px -8px rgba(60, 45, 20, 0.35);
   }
   .pct { margin: 0; font-size: 2.6rem; font-weight: 750; letter-spacing: -0.04em; line-height: 1; }
   .pct-label { margin: 2px 0 10px; font-family: var(--hand); font-size: 1.45rem; line-height: 1; color: var(--sea); }
-  .bar { height: 6px; border-radius: 99px; background: #e6dccb; overflow: hidden; }
+  .bar { height: 6px; border-radius: 99px; background: #e6dfd8; overflow: hidden; }
   .bar { display: flex; }
-  .bar i { display: block; height: 100%; background: var(--sea); border-radius: 99px; }
+  .bar i { display: block; height: 100%; background: var(--gold); border-radius: 99px; }
   .bar b { display: block; height: 100%; background: var(--sage); border-radius: 0 99px 99px 0; margin-left: 2px; }
-  .status dl .plan dd { color: #6d7650; }
+  .status dl .plan dd { color: #6f7255; }
   .status dl { margin: 12px 0 0; display: grid; gap: 4px; }
   .status dl div { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.88rem; }
   .status dt { color: var(--ink-soft); }
@@ -89,7 +89,7 @@ const de = lang === 'de';
   .key li { display: inline-flex; align-items: center; gap: 6px; }
   .k { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
   .k.visited { background: var(--blush); }
-  .k.open { background: #f4eee2; border: 1px solid #cdbfa6; }
+  .k.open { background: #fdfbf9; border: 1px solid #d8cec3; }
   .k.planned { background: var(--sage); }
 
   @media (max-width: 600px) {
@@ -111,7 +111,7 @@ const de = lang === 'de';
   .maplibregl-popup-content { background: var(--linen); border-radius: 4px; padding: 10px 12px; box-shadow: var(--shadow); font-family: var(--font); }
   .maplibregl-popup-tip { border-top-color: var(--linen) !important; border-bottom-color: var(--linen) !important; }
   .pop { max-width: 190px; }
-  .pop .pimg { aspect-ratio: 4 / 3; background: #ddd2bd; overflow: hidden; margin-bottom: 8px; }
+  .pop .pimg { aspect-ratio: 4 / 3; background: #e2dbd3; overflow: hidden; margin-bottom: 8px; }
   .pop .pimg img { width: 100%; height: 100%; object-fit: cover; }
   .pop .pt { font-family: var(--hand); font-size: 1.55rem; line-height: 1.05; margin: 0; color: var(--ink); }
   .pop .ps { font-size: 0.85rem; color: var(--ink-soft); margin: 2px 0 0; }
@@ -178,7 +178,7 @@ const de = lang === 'de';
   }
 
   const css = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  const PIN_COLORS: Record<Pin['kind'], string> = { stop: '#2c5f5d', place: '#2c5f5d', entry: '#c98f84', planned: '#8a9468' };
+  const PIN_COLORS: Record<Pin['kind'], string> = { stop: '#2d2d2d', place: '#2d2d2d', entry: '#c6964f', planned: '#8a8d6c' };
 
   function pinSvg(kind: Pin['kind']) {
     if (kind === 'planned')
@@ -238,7 +238,7 @@ const de = lang === 'de';
         },
         layers: [
           { id: 'sea', type: 'background', paint: { 'background-color': css('--seaglass') } },
-          { id: 'land', type: 'fill', source: 'countries', paint: { 'fill-color': '#f4eee2' } },
+          { id: 'land', type: 'fill', source: 'countries', paint: { 'fill-color': '#fdfbf9' } },
           {
             id: 'visited',
             type: 'fill',
@@ -267,20 +267,20 @@ const de = lang === 'de';
             filter: ['in', ['get', 'fips'], ['literal', data.states]],
             paint: { 'fill-color': css('--blush'), 'fill-opacity': 0.85 },
           },
-          { id: 'borders', type: 'line', source: 'countries', paint: { 'line-color': '#cdbfa6', 'line-width': 0.6 } },
+          { id: 'borders', type: 'line', source: 'countries', paint: { 'line-color': '#d8cec3', 'line-width': 0.6 } },
           {
             id: 'state-borders',
             type: 'line',
             source: 'states',
             layout: { visibility: usByStates ? 'visible' : 'none' },
-            paint: { 'line-color': '#cdbfa6', 'line-width': 0.5 },
+            paint: { 'line-color': '#d8cec3', 'line-width': 0.5 },
           },
           {
             id: 'route',
             type: 'line',
             source: 'routes',
             layout: { 'line-cap': 'round', 'line-join': 'round' },
-            paint: { 'line-color': css('--sea'), 'line-width': 2, 'line-dasharray': [1.5, 2] },
+            paint: { 'line-color': css('--gold'), 'line-width': 2, 'line-dasharray': [1.5, 2] },
           },
         ],
       } as any,

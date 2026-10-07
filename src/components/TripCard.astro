@@ -17,7 +17,7 @@ const countryList = trip.data.countries.map((c) => countryName(c, lang)).join(',
       <figcaption>{title}</figcaption>
     </figure>
   </a>
-  <p class="meta"><span>{formatRange(trip.data.start, trip.data.end, lang)}</span>{countryList && <span class="hand c">{countryList}</span>}</p>
+  <p class="meta"><span>{formatRange(trip.data.start, trip.data.end, lang)}</span>{countryList && countryList !== title && <span class="hand c">{countryList}</span>}</p>
   {summary && <p class="sum">{summary}</p>}
 </article>
 <style>

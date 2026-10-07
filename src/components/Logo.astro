@@ -1,13 +1,12 @@
 ---
-// Wortmarke: "Domis" modern, "on tour" handschriftlich, kleiner Pin als i-Punkt-Ersatz
+// Wortmarke im Stil des Logos: Serifen-Versalien mit weitem Abstand, goldener Bogen darüber
 ---
 <span class="logo" aria-hidden="true">
-  <svg class="pin" viewBox="0 0 24 32" width="16" height="22"><path d="M12 1C6 1 1.5 5.4 1.5 11.2 1.5 19 12 31 12 31s10.5-12 10.5-19.8C22.5 5.4 18 1 12 1z" fill="var(--sea)"/><circle cx="12" cy="11" r="4" fill="var(--linen)"/></svg>
-  <span class="w">Domis</span><span class="h">on tour</span>
+  <svg class="arc" viewBox="0 0 200 18" preserveAspectRatio="none"><path d="M4 17 Q100 -6 196 17" fill="none" stroke="var(--gold)" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>
+  <span class="w">Domi’s on Tour</span>
 </span>
 <style>
-  .logo { display: inline-flex; align-items: baseline; gap: 6px; color: var(--ink); white-space: nowrap; }
-  .pin { align-self: center; transform: translateY(-1px); }
-  .w { font-weight: 800; font-size: 1.35rem; letter-spacing: -0.04em; }
-  .h { font-family: var(--hand); font-size: 1.65rem; line-height: 1; color: var(--sea); transform: rotate(-4deg) translateY(2px); display: inline-block; }
+  .logo { display: inline-flex; flex-direction: column; align-items: center; color: var(--ink); white-space: nowrap; line-height: 1; }
+  .arc { width: 86%; height: 8px; margin-bottom: 3px; }
+  .w { font-family: var(--serif); font-weight: 700; font-size: 0.98rem; letter-spacing: 0.26em; text-transform: uppercase; margin-right: -0.26em; }
 </style>
