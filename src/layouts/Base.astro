@@ -130,7 +130,8 @@ const nav = [
           {site.tiktok && <a href={site.tiktok} rel="me noopener" target="_blank">TikTok</a>}
           {site.youtube && <a href={site.youtube} rel="me noopener" target="_blank">YouTube</a>}
           {site.rednote && <a href={site.rednote} rel="me noopener" target="_blank">RedNote</a>}
-          {site.email && <a href={`mailto:${site.email}`}>E-Mail</a>}
+          {site.email && <a href={`mailto:${site.email}`}>{site.email}</a>}
+          {(site as any).email_collab && <a href={`mailto:${(site as any).email_collab}`}>{lang === 'de' ? 'Kooperationen' : 'Collaborations'}: {(site as any).email_collab}</a>}
         </div>
         <div class="foot-legal">
           <a href={path('imprint', lang)}>{tr.imprint}</a>

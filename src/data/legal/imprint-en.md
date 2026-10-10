@@ -6,6 +6,7 @@ Dominique Flückiger and Dominique Winkler
 [Postcode Town]
 Switzerland
 
-Email: [your email address]
+Email: [info@domisontour.ch](mailto:info@domisontour.ch)  
+Collaborations: [collab@domisontour.ch](mailto:collab@domisontour.ch)
 
 This website is a private travel project. The operators of linked external sites are responsible for their content.

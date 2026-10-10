@@ -472,6 +472,9 @@ content:
       - name: email
         label: Kontakt-E-Mail
         type: string
+      - name: email_collab
+        label: E-Mail für Kooperationen
+        type: string
 
   # ---------------- Weltkarte ----------------
   - name: worldmap

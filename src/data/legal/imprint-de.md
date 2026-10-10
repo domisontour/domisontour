@@ -6,6 +6,7 @@ Dominique Flückiger und Dominique Winkler
 [PLZ Ort]
 Schweiz
 
-E-Mail: [eure E-Mail-Adresse]
+E-Mail: [info@domisontour.ch](mailto:info@domisontour.ch)  
+Kooperationen: [collab@domisontour.ch](mailto:collab@domisontour.ch)
 
 Diese Webseite ist ein privates Reiseprojekt. Für Inhalte externer Links sind deren Betreiber verantwortlich.
