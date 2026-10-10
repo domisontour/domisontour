@@ -9,6 +9,7 @@ const routes = {
   dest: { de: '/reiseziele/', en: '/en/destinations/' },
   diary: { de: '/tagebuch/', en: '/en/diary/' },
   about: { de: '/ueber-uns/', en: '/en/about/' },
+  collab: { de: '/zusammenarbeit/', en: '/en/work-with-us/' },
   imprint: { de: '/impressum/', en: '/en/imprint/' },
   privacy: { de: '/datenschutz/', en: '/en/privacy/' },
 } as const;
@@ -49,6 +50,7 @@ export const ui = {
     nav_trips: 'Reisen',
     nav_diary: 'Tagebuch',
     nav_about: 'Über uns',
+    nav_collab: 'Zusammenarbeit',
     switch_label: 'Sprache wählen',
     skip: 'Zum Inhalt springen',
     tagline: 'Herr Domi & Frou Domi',
@@ -120,6 +122,7 @@ export const ui = {
     nav_trips: 'Trips',
     nav_diary: 'Diary',
     nav_about: 'About us',
+    nav_collab: 'Work with us',
     switch_label: 'Choose language',
     skip: 'Skip to content',
     tagline: 'Herr Domi & Frou Domi',

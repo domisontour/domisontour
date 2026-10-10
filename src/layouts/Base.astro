@@ -12,7 +12,7 @@ interface Props {
   /** Gleiche Seite in der anderen Sprache */
   alt: string;
   image?: string;
-  active?: 'map' | 'trips' | 'diary' | 'about' | 'dest';
+  active?: 'map' | 'trips' | 'diary' | 'about' | 'dest' | 'collab';
 }
 
 const { lang, title, description, alt, image, active } = Astro.props;
@@ -43,6 +43,7 @@ const nav = [
   { key: 'map', href: path('map', lang), label: tr.nav_map },
   { key: 'diary', href: path('diary', lang), label: tr.nav_diary },
   { key: 'about', href: path('about', lang), label: tr.nav_about },
+  { key: 'collab', href: path('collab', lang), label: tr.nav_collab },
 ] as const;
 ---
 <!doctype html>
@@ -134,6 +135,7 @@ const nav = [
           {(site as any).email_collab && <a href={`mailto:${(site as any).email_collab}`}>{lang === 'de' ? 'Kooperationen' : 'Collaborations'}: {(site as any).email_collab}</a>}
         </div>
         <div class="foot-legal">
+          <a href={path('collab', lang)}>{tr.nav_collab}</a>
           <a href={path('imprint', lang)}>{tr.imprint}</a>
           <a href={path('privacy', lang)}>{tr.privacy}</a>
           <span>© {new Date().getFullYear()} Domis on Tour</span>
@@ -142,6 +144,15 @@ const nav = [
     </footer>
 
     <script>
+      // Handy: aktiven Menüpunkt sichtbar machen, Ausblendung am Ende entfernen
+      const navEl = document.querySelector<HTMLElement>('.nav');
+      if (navEl) {
+        const cur = navEl.querySelector<HTMLElement>('[aria-current="page"]');
+        if (cur && navEl.scrollWidth > navEl.clientWidth) navEl.scrollLeft = Math.max(0, cur.offsetLeft - 16);
+        const upd = () => navEl.classList.toggle('at-end', navEl.scrollLeft + navEl.clientWidth >= navEl.scrollWidth - 4);
+        navEl.addEventListener('scroll', upd, { passive: true });
+        upd();
+      }
       // Reiseziel-Menü: öffnet beim Drüberfahren (Computer) oder Antippen des Pfeils (Handy)
       const btn = document.querySelector<HTMLButtonElement>('.mega-btn');
       const panel = document.getElementById('mega');
@@ -209,8 +220,12 @@ const nav = [
 
   @media (max-width: 760px) {
     .bar { grid-template-columns: 1fr auto; height: auto; padding-top: 12px; padding-bottom: 6px; row-gap: 6px; }
-    .nav { grid-column: 1 / -1; grid-row: 2; overflow-x: auto; }
-    .nav ul { justify-content: flex-start; gap: 22px; }
+    /* Navigation am Handy seitlich wischbar, rechts ausgeblendet als Hinweis auf weitere Punkte */
+    .nav { grid-column: 1 / -1; grid-row: 2; overflow-x: auto; scrollbar-width: none; margin-right: calc(var(--gutter) * -1); padding-right: 32px; -webkit-mask-image: linear-gradient(to right, #000 82%, transparent); mask-image: linear-gradient(to right, #000 82%, transparent); }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav.at-end { -webkit-mask-image: none; mask-image: none; }
+    .nav ul { justify-content: flex-start; gap: 20px; }
+    .nav a { white-space: nowrap; }
   }
 
   .site-footer { border-top: 1px solid var(--line); padding: 48px 0 40px; margin-top: 40px; }

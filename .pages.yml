@@ -550,3 +550,108 @@ content:
             label: Längengrad
             type: number
             required: true
+
+  # ---------------- Zusammenarbeit ----------------
+  - name: collab
+    label: Zusammenarbeit (Seite für Brands)
+    type: file
+    path: src/data/collab.json
+    format: json
+    fields:
+      - name: title_de
+        label: Titel (Deutsch)
+        type: string
+      - name: title_en
+        label: Titel (Englisch)
+        type: string
+      - name: lead_de
+        label: Einleitung (Deutsch)
+        type: text
+      - name: lead_en
+        label: Einleitung (Englisch)
+        type: text
+      - name: offers
+        label: Angebote
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.title_de}"
+        fields:
+          - name: icon
+            label: Symbol
+            type: select
+            options:
+              values: [camera, video, phone, pin, plane, bed]
+          - name: title_de
+            label: Titel (Deutsch)
+            type: string
+          - name: title_en
+            label: Titel (Englisch)
+            type: string
+          - name: text_de
+            label: Beschreibung (Deutsch)
+            type: text
+          - name: text_en
+            label: Beschreibung (Englisch)
+            type: text
+      - name: portfolio
+        label: Beispiel-Fotos (Portfolio)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.caption_de}"
+        fields:
+          - name: image
+            label: Foto
+            type: image
+            required: true
+          - name: caption_de
+            label: Bildtext (Deutsch)
+            type: string
+          - name: caption_en
+            label: Bildtext (Englisch)
+            type: string
+      - name: why_de
+        label: Warum mit uns (Deutsch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: why_en
+        label: Warum mit uns (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: equipment_de
+        label: Ausrüstung (Deutsch)
+        type: string
+      - name: equipment_en
+        label: Ausrüstung (Englisch)
+        type: string
+      - name: languages_de
+        label: Sprachen (Deutsch)
+        type: string
+      - name: languages_en
+        label: Sprachen (Englisch)
+        type: string
+      - name: partners
+        label: Bisherige Partner
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.name}"
+        fields:
+          - name: name
+            label: Name
+            type: string
+            required: true
+          - name: url
+            label: Webseite (optional)
+            type: string
+      - name: mediakit
+        label: Mediakit (PDF, optional)
+        type: file
+        options:
+          categories: [document]

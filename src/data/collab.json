@@ -1,0 +1,66 @@
+{
+  "title_de": "Zusammenarbeit",
+  "title_en": "Work with us",
+  "lead_de": "Wir erstellen authentischen Reise-Content für Hotels, Destinationen und Marken. Für eure eigenen Kanäle oder für unsere.",
+  "lead_en": "We create authentic travel content for hotels, destinations and brands. For your own channels or for ours.",
+  "offers": [
+    {
+      "icon": "camera",
+      "title_de": "UGC-Fotos",
+      "title_en": "UGC photos",
+      "text_de": "Hochwertige Fotos von eurem Hotel, Produkt oder Erlebnis, bereit für eure Webseite, Social Media und Werbung.",
+      "text_en": "High-quality photos of your hotel, product or experience, ready for your website, social media and ads."
+    },
+    {
+      "icon": "video",
+      "title_de": "UGC-Videos",
+      "title_en": "UGC videos",
+      "text_de": "Kurze Videos im Hochformat für Reels, TikTok und Anzeigen. Auf Wunsch mit Drohnen- und 360°-Aufnahmen.",
+      "text_en": "Short vertical videos for Reels, TikTok and ads. Drone and 360° footage on request."
+    },
+    {
+      "icon": "phone",
+      "title_de": "Posts auf unseren Kanälen",
+      "title_en": "Posts on our channels",
+      "text_de": "Reels, Stories und Carousels auf Instagram, TikTok und RedNote. Ehrlich erzählt und klar als Werbung gekennzeichnet.",
+      "text_en": "Reels, stories and carousels on Instagram, TikTok and RedNote. Honestly told and clearly labelled as advertising."
+    },
+    {
+      "icon": "pin",
+      "title_de": "Hotel- und Destinations-Features",
+      "title_en": "Hotel and destination features",
+      "text_de": "Ein ausführlicher Guide auf unserer Webseite mit Tipps, Route und Fotos, der langfristig bei Google gefunden wird.",
+      "text_en": "An in-depth guide on our website with tips, route and photos that keeps being found on Google."
+    }
+  ],
+  "why_de": "Wir sind Herr Domi und Frou Domi, ein Schweizer Reisepaar. Unser Fokus liegt auf Küsten, Wildlife, Roadtrips und kleinen Orten mit Charakter. Wir zeigen Reisen so, wie sie sind, und geben konkrete Tipps, die man speichert.",
+  "why_en": "We are Herr Domi and Frou Domi, a Swiss travel couple. We focus on coastlines, wildlife, road trips and small places with character. We show travel as it really is and share practical tips people save.",
+  "equipment_de": "Canon EOS R10, DJI-Drohne, DJI Osmo, Insta360, iPhone. Bearbeitung in 4K.",
+  "equipment_en": "Canon EOS R10, DJI drone, DJI Osmo, Insta360, iPhone. Edited in 4K.",
+  "languages_de": "Deutsch, Englisch, Schweizerdeutsch",
+  "languages_en": "German, English, Swiss German",
+  "portfolio": [
+    {
+      "image": "/uploads/kapstadt-tafelberg.jpg",
+      "caption_de": "Kapstadt",
+      "caption_en": "Cape Town"
+    },
+    {
+      "image": "/uploads/kapstadt-camps-bay.jpg",
+      "caption_de": "Camps Bay",
+      "caption_en": "Camps Bay"
+    },
+    {
+      "image": "/uploads/london-eye.jpg",
+      "caption_de": "London",
+      "caption_en": "London"
+    },
+    {
+      "image": "/uploads/london-bunte-haeuser.jpg",
+      "caption_de": "London",
+      "caption_en": "London"
+    }
+  ],
+  "partners": [],
+  "mediakit": ""
+}

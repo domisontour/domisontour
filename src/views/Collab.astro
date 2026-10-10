@@ -1,0 +1,201 @@
+---
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import Gallery from '../components/Gallery.astro';
+import Icon from '../components/Icon.astro';
+import { site, pick, md } from '../lib/content';
+import { path, type Lang } from '../lib/i18n';
+import collab from '../data/collab.json';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const other: Lang = lang === 'de' ? 'en' : 'de';
+const de = lang === 'de';
+const c = collab as any;
+const s = site as any;
+
+const email = s.email_collab || s.email || 'collab@domisontour.ch';
+const subject = encodeURIComponent(de ? "Anfrage Zusammenarbeit Domi's on Tour" : "Collaboration request Domi's on Tour");
+const mailto = `mailto:${email}?subject=${subject}`;
+const title = pick(c, 'title', lang);
+const lead = pick(c, 'lead', lang);
+const offers = (c.offers ?? []) as any[];
+const portfolio = ((c.portfolio ?? []) as any[]).filter((p) => p?.image);
+const partners = ((c.partners ?? []) as any[]).filter((p) => p?.name);
+const heroPics = portfolio.slice(0, 2);
+
+const channels = [
+  s.instagram && { name: 'Instagram', url: s.instagram, icon: 'instagram' },
+  s.tiktok && { name: 'TikTok', url: s.tiktok, icon: 'tiktok' },
+  s.youtube && { name: 'YouTube', url: s.youtube, icon: 'youtube' },
+  s.rednote && { name: 'RedNote', url: s.rednote, icon: 'link' },
+].filter(Boolean) as { name: string; url: string; icon: string }[];
+
+const facts = [
+  { k: de ? 'Basis' : 'Based in', v: de ? 'Schweiz' : 'Switzerland' },
+  pick(c, 'languages', lang) && { k: de ? 'Sprachen' : 'Languages', v: pick(c, 'languages', lang) },
+  pick(c, 'equipment', lang) && { k: de ? 'Ausrüstung' : 'Equipment', v: pick(c, 'equipment', lang) },
+].filter(Boolean) as { k: string; v: string }[];
+
+const steps = de
+  ? [
+      { t: 'Anfrage', d: 'Ihr schreibt uns kurz, worum es geht: Ort, Zeitraum und was ihr euch vorstellt.' },
+      { t: 'Briefing', d: 'Wir klären Ziele, Formate, Nutzungsrechte und Budget und schicken ein Angebot.' },
+      { t: 'Produktion', d: 'Wir sind vor Ort und halten fest, was euer Angebot besonders macht.' },
+      { t: 'Lieferung', d: 'Ihr erhaltet die bearbeiteten Fotos und Videos im vereinbarten Format.' },
+    ]
+  : [
+      { t: 'Request', d: 'Send us a short note: location, dates and what you have in mind.' },
+      { t: 'Briefing', d: 'We agree on goals, formats, usage rights and budget, then send a proposal.' },
+      { t: 'Production', d: 'We visit and capture what makes your offer special.' },
+      { t: 'Delivery', d: 'You receive the edited photos and videos in the agreed format.' },
+    ];
+---
+<Base lang={lang} title={title} description={lead} alt={path('collab', other)} active="collab" image={heroPics[0]?.image}>
+  <section class="wrap hero">
+    <div class="hero-text">
+      <p class="hand kicker" aria-hidden="true">{de ? 'Travel Content & UGC' : 'Travel content & UGC'}</p>
+      <h1>{title}</h1>
+      <p class="lead">{lead}</p>
+      <div class="ctas">
+        <a class="btn" href={mailto}><Icon name="mail" size={18} />{de ? 'Anfrage senden' : 'Send a request'}</a>
+        {c.mediakit && <a class="btn ghost" href={c.mediakit} target="_blank" rel="noopener">{de ? 'Mediakit (PDF)' : 'Media kit (PDF)'}</a>}
+      </div>
+      <p class="mail-line">{email}</p>
+    </div>
+    {heroPics.length > 0 && (
+      <div class="pair" aria-hidden="true">
+        {heroPics.map((p, i) => (
+          <figure class={`polaroid p${i}`}>
+            <div class="ph"><Photo src={p.image} alt="" eager={i === 0} tone={i} sizes="(max-width: 860px) 50vw, 300px" /></div>
+            <figcaption>{(de ? p.caption_de : p.caption_en || p.caption_de) || ''}</figcaption>
+          </figure>
+        ))}
+      </div>
+    )}
+  </section>
+
+  {offers.length > 0 && (
+    <section class="wrap section" aria-labelledby="angebot-h">
+      <h2 id="angebot-h">{de ? 'Was wir anbieten' : 'What we offer'}</h2>
+      <ul class="offers">
+        {offers.map((o) => (
+          <li class="offer">
+            <span class="ic"><Icon name={o.icon || 'camera'} size={22} /></span>
+            <h3>{pick(o, 'title', lang)}</h3>
+            <p>{pick(o, 'text', lang)}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {portfolio.length > 0 && (
+    <section class="wrap section portfolio" aria-labelledby="portfolio-h">
+      <h2 id="portfolio-h">{de ? 'Einblicke in unsere Arbeit' : 'A look at our work'}</h2>
+      <Gallery photos={portfolio} lang={lang} />
+    </section>
+  )}
+
+  <section class="wrap section why" aria-labelledby="why-h">
+    <div>
+      <h2 id="why-h">{de ? 'Warum mit uns' : 'Why work with us'}</h2>
+      <div class="prose" set:html={md(pick(c, 'why', lang))} />
+      {channels.length > 0 && (
+        <ul class="channels">
+          {channels.map((ch) => (
+            <li><a href={ch.url} target="_blank" rel="me noopener"><Icon name={ch.icon} size={18} />{ch.name}</a></li>
+          ))}
+        </ul>
+      )}
+    </div>
+    {facts.length > 0 && (
+      <dl class="facts">
+        {facts.map((f) => <div><dt>{f.k}</dt><dd>{f.v}</dd></div>)}
+      </dl>
+    )}
+  </section>
+
+  <section class="wrap section" aria-labelledby="ablauf-h">
+    <h2 id="ablauf-h">{de ? 'So läuft es ab' : 'How it works'}</h2>
+    <ol class="steps">
+      {steps.map((st) => (
+        <li>
+          <h3>{st.t}</h3>
+          <p>{st.d}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  {partners.length > 0 && (
+    <section class="wrap section" aria-labelledby="partner-h">
+      <h2 id="partner-h">{de ? 'Mit wem wir gearbeitet haben' : 'Who we have worked with'}</h2>
+      <ul class="partners">
+        {partners.map((p) => <li>{p.url ? <a href={p.url} target="_blank" rel="noopener">{p.name}</a> : p.name}</li>)}
+      </ul>
+    </section>
+  )}
+
+  <section class="wrap section cta-sec">
+    <div class="cta">
+      <h2>{de ? 'Erzählt uns von eurem Projekt' : 'Tell us about your project'}</h2>
+      <p>{de ? 'Wir melden uns in der Regel innert zwei Arbeitstagen.' : 'We usually reply within two working days.'}</p>
+      <a class="btn" href={mailto}><Icon name="mail" size={18} />{email}</a>
+      <p class="small">{de ? 'Bezahlte Kooperationen kennzeichnen wir auf unseren Kanälen immer klar als Werbung.' : 'We always clearly label paid partnerships as advertising on our channels.'}</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(28px, 5vw, 72px); align-items: center; padding-top: clamp(40px, 6vw, 88px); }
+  .kicker { font-size: 2rem; color: var(--gold-deep); margin: 0 0 4px; transform: rotate(-2deg); transform-origin: left; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .mail-line { margin: 12px 0 0; color: var(--ink-soft); font-size: 0.95rem; }
+  .pair { position: relative; height: clamp(320px, 36vw, 440px); }
+  .pair .polaroid { position: absolute; width: 58%; margin: 0; }
+  .pair .p0 { right: 4%; top: 0; transform: rotate(3.5deg); z-index: 2; }
+  .pair .p1 { left: 0; bottom: 0; transform: rotate(-5deg); z-index: 1; }
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .pair { max-width: 420px; width: 100%; margin: 8px auto 0; height: 330px; }
+  }
+
+  .offers { list-style: none; margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .offer { background: var(--linen); border-radius: var(--radius); padding: 22px 22px 8px; box-shadow: var(--shadow); }
+  .ic { width: 46px; height: 46px; border-radius: 50%; background: var(--ink); color: var(--linen); display: grid; place-items: center; margin-bottom: 14px; }
+  .offer h3 { margin-bottom: 6px; }
+  .offer p { color: var(--ink-soft); font-size: 1rem; }
+
+  .portfolio h2 { margin-bottom: 28px; }
+
+  .why { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: clamp(28px, 5vw, 64px); align-items: start; }
+  .channels { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .channels a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; background: var(--linen); color: var(--ink); text-decoration: none; font-weight: 600; box-shadow: var(--shadow); }
+  .channels a:hover { color: var(--gold-deep); }
+  .facts { margin: 0; background: var(--linen); border-radius: var(--radius); padding: 10px 24px; box-shadow: var(--shadow); }
+  .facts div { padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .facts div:last-child { border-bottom: 0; }
+  .facts dt { font-size: 0.85rem; color: var(--ink-soft); }
+  .facts dd { margin: 2px 0 0; font-weight: 600; }
+  @media (max-width: 860px) { .why { grid-template-columns: 1fr; } }
+
+  .steps { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; counter-reset: st; }
+  .steps li { counter-increment: st; position: relative; padding-top: 56px; }
+  .steps li::before { content: counter(st); position: absolute; top: 0; left: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: var(--linen); display: grid; place-items: center; font-weight: 700; z-index: 1; }
+  .steps li:not(:last-child)::after { content: ''; position: absolute; top: 19px; left: 48px; right: -16px; border-top: 2px dashed var(--gold); }
+  .steps p { color: var(--ink-soft); font-size: 1rem; }
+  @media (max-width: 860px) {
+    .steps { grid-template-columns: 1fr; gap: 8px; }
+    .steps li { padding: 0 0 18px 60px; }
+    .steps li:not(:last-child)::after { top: 46px; left: 19px; right: auto; bottom: 0; border-top: 0; border-left: 2px dashed var(--gold); }
+  }
+
+  .partners { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 28px; font-family: var(--serif); font-size: 1.2rem; }
+
+  .cta { background: var(--linen); border-radius: 28px; padding: clamp(28px, 5vw, 56px); text-align: center; box-shadow: var(--shadow); border-top: 3px solid var(--gold); }
+  .cta h2 { margin-bottom: 8px; }
+  .cta p { color: var(--ink-soft); }
+  .cta .btn { margin: 8px 0 18px; }
+  .cta .small { font-size: 0.88rem; margin: 0; }
+</style>
