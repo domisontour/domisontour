@@ -7,9 +7,12 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "astro build && wrangler deploy"
+    "deploy": "astro build && wrangler deploy",
+    "prebuild": "node scripts/images.mjs",
+    "predev": "node scripts/images.mjs"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/figtree": "^5.3.0",
     "@fontsource/allura": "^5.3.0",
     "@fontsource/libre-caslon-text": "^5.3.0",
@@ -25,6 +28,7 @@
   },
   "devDependencies": {
     "polylabel": "^2.1.0",
+    "sharp": "^0.35.5",
     "wrangler": "^4.148.0"
   },
   "engines": {

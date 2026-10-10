@@ -23,7 +23,7 @@ const trips = await getTrips();
           {g.items.map((d, i) => (
             <li>
               <a href={path('dest', lang, d.slug[lang])} class="tile">
-                <span class="tile-img"><Photo src={d.cover} alt="" tone={i} /></span>
+                <span class="tile-img"><Photo src={d.cover} alt="" tone={i} sizes="64px" /></span>
                 <span class="tile-name">{d.name[lang]}</span>
                 {d.places[lang].length > 0 && <span class="tile-sub">{d.places[lang].slice(0, 3).map((p) => p.name).join(', ')}</span>}
               </a>

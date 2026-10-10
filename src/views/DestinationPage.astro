@@ -76,7 +76,7 @@ const hasGuide = sections.length || highlights.length || routesHtml || dest.trip
   <section id="ueberblick" class="wrap overview">
     <div class="intro">
       <figure class="intro-photo">
-        <div class="ph"><Photo src={s.photo_couple} alt="Herr Domi und Frou Domi" eager /></div>
+        <div class="ph"><Photo src={s.photo_couple} alt="Herr Domi und Frou Domi" eager sizes="220px" /></div>
         <span class="hello hand">{tr.intro_hi}</span>
       </figure>
       <div class="intro-text">
@@ -128,7 +128,7 @@ const hasGuide = sections.length || highlights.length || routesHtml || dest.trip
       <div class="hl">
         {highlights.map((h, i) => (
           <article class="hl-card">
-            {h.image && <div class="hl-img"><Photo src={h.image} alt={pick(h, 'title', lang)} tone={i} /></div>}
+            {h.image && <div class="hl-img"><Photo src={h.image} alt={pick(h, 'title', lang)} tone={i} sizes="(max-width: 760px) 90vw, 380px" /></div>}
             <div class="hl-body">
               <h3>{pick(h, 'title', lang)}</h3>
               {pick(h, 'text', lang) && <div class="prose" set:html={md(pick(h, 'text', lang))} />}
@@ -187,9 +187,9 @@ const hasGuide = sections.length || highlights.length || routesHtml || dest.trip
   .intro-text .prose { font-size: 1.05rem; }
   .intro-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-top: 6px; }
   .socials { display: flex; gap: 8px; }
-  .socials a { width: 40px; height: 40px; border-radius: 50%; background: var(--linen); color: var(--ink); display: grid; place-items: center; }
+  .socials a { width: 44px; height: 44px; border-radius: 50%; background: var(--linen); color: var(--ink); display: grid; place-items: center; }
   .socials a:hover { color: var(--gold-deep); }
-  .more { font-family: var(--serif); font-size: 1.15rem; color: var(--ink); text-decoration-color: var(--gold); text-decoration-thickness: 2px; }
+  .more { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--serif); font-size: 1.15rem; color: var(--ink); text-decoration-color: var(--gold); text-decoration-thickness: 2px; }
 
   .plan { background: var(--linen); border-radius: 28px; padding: 22px; align-self: start; box-shadow: var(--shadow); }
   .plan-h { font-family: var(--serif); font-size: 1.25rem; margin: 0 0 12px 6px; }

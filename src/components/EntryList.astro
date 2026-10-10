@@ -14,7 +14,7 @@ const tr = t(lang);
     return (
       <li>
         <a href={path('diary', lang, e.id)} class="entry">
-          <div class="thumb"><Photo src={img} alt={title} tone={i + 1} /></div>
+          <div class="thumb"><Photo src={img} alt={title} tone={i + 1} sizes="140px" /></div>
           <div class="body">
             <p class="when">
               <time datetime={e.data.date.toISOString().slice(0, 10)}>{formatDate(e.data.date, lang)}</time>

@@ -5,6 +5,7 @@ import TripCard from '../components/TripCard.astro';
 import EntryList from '../components/EntryList.astro';
 import Photo from '../components/Photo.astro';
 import { getTrips, getEntries, buildMapData, pick, md, site } from '../lib/content';
+import { destinationsByContinent, plannedByCountry } from '../lib/destinations';
 import { path, t, type Lang } from '../lib/i18n';
 
 interface Props { lang: Lang }
@@ -36,6 +37,9 @@ const stack: Card[] = [
 ].slice(0, 3);
 while (stack.length < 3) stack.push(null);
 const about = pick(site, 'about', lang).split('\n\n')[0];
+const groups = await destinationsByContinent(lang);
+const planned = await plannedByCountry(lang);
+const de = lang === 'de';
 ---
 <Base lang={lang} alt={path('home', other)}>
   <section class="hero wrap">
@@ -53,12 +57,12 @@ const about = pick(site, 'about', lang).split('\n\n')[0];
         card ? (
           card.href ? (
             <a class={`polaroid p${i}`} href={card.href}>
-              <div class="ph"><Photo src={card.img} alt={card.cap} label={tr.photo_soon} tone={i} eager /></div>
+              <div class="ph"><Photo src={card.img} alt={card.cap} label={tr.photo_soon} tone={i} eager={i === 0} sizes="(max-width: 860px) 60vw, 340px" /></div>
               <span class="cap">{card.cap}</span>
             </a>
           ) : (
             <div class={`polaroid p${i}`}>
-              <div class="ph"><Photo src={card.img} alt={card.cap} label={tr.photo_soon} tone={i} eager /></div>
+              <div class="ph"><Photo src={card.img} alt={card.cap} label={tr.photo_soon} tone={i} eager={i === 0} sizes="(max-width: 860px) 60vw, 340px" /></div>
               <span class="cap">{card.cap}</span>
             </div>
           )
@@ -79,43 +83,85 @@ const about = pick(site, 'about', lang).split('\n\n')[0];
           <h2>{tr.map_title}</h2>
           <p class="lead">{tr.map_lead}</p>
         </div>
-        <dl class="stats">
-          <div><dt>{tr.stat_countries}</dt><dd>{mapData.stats.countries}</dd></div>
-          <div><dt>{tr.stat_places}</dt><dd>{mapData.pins.filter((p) => p.kind !== 'entry').length}</dd></div>
-          <div><dt>{tr.stat_entries}</dt><dd>{entries.length}</dd></div>
-        </dl>
       </div>
       <WorldMap data={mapData} lang={lang} label={tr.map_title} status />
     </div>
   </section>
 
-  <section class="section">
+  <section class="section dest-sec" aria-labelledby="ziele-h">
     <div class="wrap">
       <div class="section-head">
         <div>
-          <h2>{tr.trips_title}</h2>
-          <p class="lead">{tr.trips_lead}</p>
+          <h2 id="ziele-h">{tr.dest_title}</h2>
+          <p class="lead">{tr.dest_lead}</p>
         </div>
-        <a href={path('trips', lang)}>{tr.hero_cta_trips}</a>
+        <a class="tlink" href={path('dest', lang)}>{tr.dest_all}</a>
       </div>
-      {trips.length ? (
-        <div class="grid">{trips.slice(0, 6).map((trip, i) => <TripCard trip={trip} lang={lang} index={i} />)}</div>
-      ) : <p class="muted">{tr.empty_trips}</p>}
+      <div class="index">
+        {groups.map((g) => (
+          <div class="index-col">
+            <h3 class="hand">{g.name}</h3>
+            <ul>
+              {g.items.map((d) => (
+                <li>
+                  <a href={path('dest', lang, d.slug[lang])}>
+                    <span class="ix-name">{d.name[lang]}</span>
+                    {d.places[lang].length > 0 && <span class="ix-sub">{d.places[lang].length} {de ? (d.places[lang].length === 1 ? 'Ort' : 'Orte') : (d.places[lang].length === 1 ? 'place' : 'places')}</span>}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
 
-  <section class="section diary-sec">
-    <div class="wrap two">
-      <div>
-        <h2>{tr.latest_diary}</h2>
-        <p class="lead">{tr.diary_lead}</p>
-        <a href={path('diary', lang)}>{tr.all_entries}</a>
+  {planned.length > 0 && (
+    <section class="section next-sec" aria-labelledby="next-h">
+      <div class="wrap">
+        <p class="hand kicker" aria-hidden="true">{de ? 'Koffer schon halb gepackt' : 'Bags half packed'}</p>
+        <h2 id="next-h">{de ? 'Als Nächstes' : 'Up next'}</h2>
+        <ol class="route">
+          {planned.map((p) => (
+            <li>
+              <svg class="rpin" viewBox="0 0 24 32" width="22" height="30" aria-hidden="true"><path d="M12 1C6 1 1.5 5.4 1.5 11.2 1.5 19 12 31 12 31s10.5-12 10.5-19.8C22.5 5.4 18 1 12 1z" fill="var(--linen)" stroke="#8a8d6c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="12" cy="11" r="3.5" fill="#8a8d6c"/></svg>
+              <span class="r-name">{p.name}</span>
+              {p.places.length > 0 && <span class="r-places hand">{p.places.join(', ')}</span>}
+            </li>
+          ))}
+        </ol>
       </div>
-      <div>
-        {entries.length ? <EntryList entries={entries.slice(0, 3)} lang={lang} /> : <p class="muted">{tr.empty_diary}</p>}
+    </section>
+  )}
+
+  {trips.length > 0 && (
+    <section class="section" aria-labelledby="trips-h">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2 id="trips-h">{de ? 'Reiseberichte' : 'Trip reports'}</h2>
+            <p class="lead">{tr.trips_lead}</p>
+          </div>
+          <a class="tlink" href={path('trips', lang)}>{tr.hero_cta_trips}</a>
+        </div>
+        <div class="grid">{trips.slice(0, 3).map((trip, i) => <TripCard trip={trip} lang={lang} index={i} />)}</div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
+
+  {entries.length > 0 && (
+    <section class="section diary-sec">
+      <div class="wrap two">
+        <div>
+          <h2>{tr.latest_diary}</h2>
+          <p class="lead">{tr.diary_lead}</p>
+          <a class="tlink" href={path('diary', lang)}>{tr.all_entries}</a>
+        </div>
+        <div><EntryList entries={entries.slice(0, 3)} lang={lang} /></div>
+      </div>
+    </section>
+  )}
 
   <section class="section">
     <div class="wrap about">
@@ -146,6 +192,32 @@ const about = pick(site, 'about', lang).split('\n\n')[0];
   }
 
   .map-sec { padding-top: clamp(24px, 4vw, 48px); }
+  /* Reiseziel-Verzeichnis im Stil eines Reisetagebuch-Registers */
+  .index { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px clamp(24px, 4vw, 56px); border-top: 1.5px solid var(--gold); padding-top: 20px; }
+  .index-col h3 { font-size: 2rem; color: var(--gold-deep); margin: 0 0 4px; letter-spacing: 0; }
+  .index-col ul { list-style: none; margin: 0 0 18px; padding: 0; }
+  .index-col a { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-height: 44px; padding: 8px 0; border-bottom: 1px dashed var(--line); color: var(--ink); text-decoration: none; }
+  .ix-name { font-family: var(--serif); font-size: 1.12rem; }
+  .ix-sub { font-size: 0.82rem; color: var(--ink-soft); white-space: nowrap; }
+  .index-col a:hover .ix-name, .index-col a:focus-visible .ix-name { text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 4px; }
+
+  /* Als Nächstes: geplante Ziele als gestrichelte Route */
+  .next-sec { padding-top: 0; }
+  .dest-sec { padding-top: clamp(24px, 4vw, 48px); }
+  .kicker { font-size: 1.8rem; color: var(--gold-deep); margin: 0; transform: rotate(-2deg); transform-origin: left; }
+  .route { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, 1fr); position: relative; }
+  .route::before { content: ''; position: absolute; left: 11px; right: 11px; top: 14px; border-top: 2px dashed var(--gold); }
+  .route li { position: relative; display: flex; flex-direction: column; gap: 4px; padding-right: 16px; }
+  .rpin { position: relative; z-index: 1; margin-bottom: 10px; background: var(--sand); }
+  .r-name { font-family: var(--serif); font-size: 1.3rem; }
+  .r-places { font-size: 1.5rem; color: var(--ink-soft); line-height: 1.1; }
+  @media (max-width: 760px) {
+    .route { grid-auto-flow: row; gap: 18px; padding-left: 40px; }
+    .route::before { left: 11px; right: auto; top: 10px; bottom: 10px; border-top: 0; border-left: 2px dashed var(--gold); }
+    .route li { padding-right: 0; }
+    .rpin { position: absolute; left: -40px; top: 0; margin: 0; }
+  }
+
   .stats { display: flex; gap: clamp(18px, 3vw, 36px); margin: 0; }
   .stats div { display: flex; flex-direction: column-reverse; }
   .stats dt { font-size: 0.9rem; color: var(--ink-soft); }

@@ -38,7 +38,7 @@ const facts = [
         {summary && <p class="lead">{summary}</p>}
       </div>
       <figure class="polaroid cover">
-        <div class="ph"><Photo src={d.cover} alt={title} label={tr.photo_soon} eager /></div>
+        <div class="ph"><Photo src={d.cover} alt={title} label={tr.photo_soon} eager sizes="(max-width: 860px) 90vw, 440px" /></div>
         <figcaption>{title}</figcaption>
       </figure>
     </header>

@@ -72,7 +72,7 @@ function countryShapes() {
   }
   return shapes!;
 }
-function countryAt(lat: number, lng: number): string | null {
+export function countryAt(lat: number, lng: number): string | null {
   const find = (x: number, y: number) => countryShapes().find((s) => s.f.geometry && geoContains(s.f, [x, y]))?.iso;
   const direct = find(lng, lat);
   if (direct) return direct;
@@ -150,4 +150,32 @@ export async function destinationsByContinent(lang: Lang) {
     name: CONTINENT_NAMES[c][lang],
     items: all.filter((d) => d.continent === c).sort((a, b) => a.name[lang].localeCompare(b.name[lang], lang)),
   })).filter((g) => g.items.length);
+}
+
+/** Geplante Reisen: geplante Länder plus geplante Orte, nach Land gruppiert */
+export async function plannedByCountry(lang: Lang) {
+  const isoLib = (await import('i18n-iso-countries')).default;
+  const pd = places as any;
+  const visited = new Set((await getDestinations()).map((d) => d.code));
+  const groups = new Map<string, { code: string; name: string; places: string[]; visited: boolean }>();
+  const add = (code: string) => {
+    if (!groups.has(code)) {
+      groups.set(code, {
+        code,
+        name: NAME_OVERRIDES[code]?.[lang] || countryName(code, lang),
+        places: [],
+        visited: visited.has(code),
+      });
+    }
+    return groups.get(code)!;
+  };
+  for (const c of (pd.planned_countries ?? []) as string[]) if (c?.trim()) add(c.trim().toUpperCase());
+  for (const p of (pd.planned_places ?? []) as any[]) {
+    if (p.lat == null || p.lng == null) continue;
+    const num = countryAt(p.lat, p.lng);
+    const code = num ? isoLib.numericToAlpha2(num) : undefined;
+    if (!code) continue;
+    add(code).places.push((lang === 'en' && p.name_en) || p.name_de);
+  }
+  return [...groups.values()];
 }

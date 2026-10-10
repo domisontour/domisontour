@@ -29,7 +29,7 @@ const mapData = d.lat != null && d.lng != null ? buildMapData([], [entry], lang)
       <h1>{title}</h1>
       {trip && <p class="trip">{tr.from_trip}: <a href={path('trips', lang, trip.id)}>{pick(trip.data, 'title', lang)}</a></p>}
     </header>
-    {d.cover && <figure class="polaroid cover"><div class="ph wide"><Photo src={d.cover} alt={title} eager /></div></figure>}
+    {d.cover && <figure class="polaroid cover"><div class="ph wide"><Photo src={d.cover} alt={title} eager sizes="(max-width: 860px) 95vw, 820px" /></div></figure>}
     {isFallback(d, 'text', lang) && <p class="note">{tr.fallback_note}</p>}
     <div class="prose" set:html={md(text)} />
     {d.photos.length > 0 && <div class="gal"><Gallery photos={d.photos} lang={lang} /></div>}

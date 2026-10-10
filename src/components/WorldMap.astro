@@ -52,6 +52,12 @@ const de = lang === 'de';
     </div>
   )}
 
+  {mode === 'world' && (
+    <button type="button" class="spin-btn" hidden aria-pressed="false" data-pause={de ? 'Drehung anhalten' : 'Pause rotation'} data-play={de ? 'Drehung starten' : 'Start rotation'} aria-label={de ? 'Drehung anhalten' : 'Pause rotation'}>
+      <svg class="i-pause" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <svg class="i-play" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5z" fill="currentColor"/></svg>
+    </button>
+  )}
   <p class="hint">{tr.map_hint}</p>
   {data.pins.length > 0 && (
     <noscript>
@@ -66,6 +72,11 @@ const de = lang === 'de';
     height: var(--h); border-radius: 3px; overflow: hidden;
     background: radial-gradient(circle at 50% 50%, #f6f2ee 0%, #ece7e3 55%, #e4ddd6 100%);
   }
+  .spin-btn { position: absolute; left: 22px; top: 22px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(253, 251, 249, 0.92); color: var(--ink); display: grid; place-items: center; cursor: pointer; box-shadow: 0 4px 12px -6px rgba(45, 35, 25, 0.4); }
+  .spin-btn:hover { background: var(--linen); }
+  .spin-btn .i-play { display: none; }
+  .spin-btn[aria-pressed='true'] .i-play { display: block; }
+  .spin-btn[aria-pressed='true'] .i-pause { display: none; }
   .hint { position: absolute; left: 22px; bottom: 18px; margin: 0; font-size: 0.8rem; color: var(--ink-soft); background: rgba(248, 243, 234, 0.85); padding: 3px 10px; border-radius: 999px; pointer-events: none; }
 
   .status {
@@ -104,10 +115,10 @@ const de = lang === 'de';
 </style>
 
 <style is:global>
-  .dot-pin { width: 24px; height: 32px; padding: 0; border: 0; background: none; cursor: pointer; filter: drop-shadow(0 2px 3px rgba(40, 30, 10, 0.35)); }
-  .dot-pin.small { width: 18px; height: 24px; }
-  .dot-pin svg { width: 100%; height: 100%; display: block; }
-  .dot-pin:hover, .dot-pin:focus-visible { transform: translateY(-2px); }
+  .dot-pin { width: 44px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; display: flex; align-items: flex-end; justify-content: center; }
+  .dot-pin svg { width: 24px; height: 32px; display: block; filter: drop-shadow(0 2px 3px rgba(40, 30, 10, 0.35)); transition: transform 0.15s ease; }
+  .dot-pin.small svg { width: 18px; height: 24px; }
+  .dot-pin:hover svg, .dot-pin:focus-visible svg { transform: translateY(-2px); }
   .maplibregl-popup-content { background: var(--linen); border-radius: 4px; padding: 10px 12px; box-shadow: var(--shadow); font-family: var(--font); }
   .maplibregl-popup-tip { border-top-color: var(--linen) !important; border-bottom-color: var(--linen) !important; }
   .pop { max-width: 190px; }
@@ -116,6 +127,8 @@ const de = lang === 'de';
   .pop .pt { font-family: var(--hand); font-size: 1.55rem; line-height: 1.05; margin: 0; color: var(--ink); }
   .pop .ps { font-size: 0.85rem; color: var(--ink-soft); margin: 2px 0 0; }
   .pop a { display: inline-block; margin-top: 8px; font-weight: 600; font-size: 0.9rem; }
+  .maplibregl-ctrl-group button { width: 44px !important; height: 44px !important; }
+  .maplibregl-ctrl-group { border-radius: 10px !important; overflow: hidden; }
   .maplibregl-ctrl-attrib { background: rgba(248, 243, 234, 0.8) !important; font-size: 10px; }
   .maplibregl-cooperative-gesture-screen { font-family: var(--font); background: rgba(43, 42, 38, 0.55); }
 </style>
@@ -350,17 +363,19 @@ const de = lang === 'de';
       return;
     }
 
-    // Langsame Drehung, bis jemand mit dem Globus interagiert
+    // Langsame Drehung, bis jemand mit dem Globus interagiert oder auf Pause drückt
     const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (still) return;
-    let spinning = true;
+    const btn = el.parentElement?.querySelector<HTMLButtonElement>('.spin-btn');
+    let spinning = false;
     let visible = true;
-    const stop = () => (spinning = false);
-    ['mousedown', 'touchstart', 'wheel', 'keydown'].forEach((ev) => el.addEventListener(ev, stop, { passive: true, once: true }));
-    map.on('dragstart', stop);
-    map.on('zoomstart', (e: any) => e.originalEvent && stop());
-    new IntersectionObserver(([it]) => (visible = it.isIntersecting)).observe(el);
     let last = 0;
+    const setBtn = () => {
+      if (!btn) return;
+      btn.hidden = false;
+      btn.setAttribute('aria-pressed', String(!spinning));
+      btn.setAttribute('aria-label', (spinning ? btn.dataset.pause : btn.dataset.play) || '');
+    };
     const tick = (ts: number) => {
       if (!spinning) return;
       if (visible && last) {
@@ -370,7 +385,14 @@ const de = lang === 'de';
       last = ts;
       requestAnimationFrame(tick);
     };
-    map.once('idle', () => requestAnimationFrame(tick));
+    const start = () => { if (spinning) return; spinning = true; last = 0; setBtn(); requestAnimationFrame(tick); };
+    const stop = () => { spinning = false; setBtn(); };
+    btn?.addEventListener('click', () => (spinning ? stop() : start()));
+    ['mousedown', 'touchstart', 'wheel'].forEach((ev) => el.addEventListener(ev, stop, { passive: true }));
+    map.on('dragstart', stop);
+    map.on('zoomstart', (e: any) => e.originalEvent && stop());
+    new IntersectionObserver(([it]) => (visible = it.isIntersecting)).observe(el);
+    map.once('idle', start);
   }
 
   const io = new IntersectionObserver(
