@@ -182,5 +182,32 @@
       "lat": 47.4979,
       "lng": 19.0402
     }
+  ],
+  "next_trips": [
+    {
+      "country": "TH",
+      "when_de": "Januar 2027",
+      "when_en": "January 2027"
+    },
+    {
+      "country": "US",
+      "when_de": "Mai 2027",
+      "when_en": "May 2027"
+    },
+    {
+      "country": "NA",
+      "when_de": "September 2027",
+      "when_en": "September 2027"
+    },
+    {
+      "country": "PT",
+      "when_de": "Datum offen",
+      "when_en": "Date to be set"
+    },
+    {
+      "country": "HU",
+      "when_de": "Datum offen",
+      "when_en": "Date to be set"
+    }
   ]
 }

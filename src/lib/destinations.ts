@@ -157,7 +157,7 @@ export async function plannedByCountry(lang: Lang) {
   const isoLib = (await import('i18n-iso-countries')).default;
   const pd = places as any;
   const visited = new Set((await getDestinations()).map((d) => d.code));
-  const groups = new Map<string, { code: string; name: string; places: string[]; visited: boolean }>();
+  const groups = new Map<string, { code: string; name: string; places: string[]; visited: boolean; when: string }>();
   const add = (code: string) => {
     if (!groups.has(code)) {
       groups.set(code, {
@@ -165,6 +165,7 @@ export async function plannedByCountry(lang: Lang) {
         name: NAME_OVERRIDES[code]?.[lang] || countryName(code, lang),
         places: [],
         visited: visited.has(code),
+        when: '',
       });
     }
     return groups.get(code)!;
@@ -177,5 +178,15 @@ export async function plannedByCountry(lang: Lang) {
     if (!code) continue;
     add(code).places.push((lang === 'en' && p.name_en) || p.name_de);
   }
-  return [...groups.values()];
+  // Reihenfolge und Zeitpunkt aus „Als Nächstes“ im Upload-Panel; nicht aufgeführte Länder kommen ans Ende
+  const order = ((pd.next_trips ?? []) as any[]).filter((t) => t?.country).map((t) => ({ ...t, country: String(t.country).trim().toUpperCase() }));
+  for (const t of order) {
+    const g = groups.get(t.country);
+    if (g) g.when = (lang === 'en' && t.when_en) || t.when_de || '';
+  }
+  const rank = (code: string) => {
+    const i = order.findIndex((t) => t.country === code);
+    return i === -1 ? 999 : i;
+  };
+  return [...groups.values()].sort((a, b) => rank(a.code) - rank(b.code));
 }

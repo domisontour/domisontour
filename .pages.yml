@@ -518,6 +518,26 @@ content:
             type: number
             required: true
             description: Zweite Zahl aus Google Maps.
+      - name: next_trips
+        label: Als Nächstes (Reihenfolge und Zeitpunkt auf der Startseite)
+        type: object
+        description: "Reihenfolge per Ziehen ändern. Ländercode wie bei den geplanten Ländern, z. B. TH, US, NA."
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.country} · {fields.when_de}"
+        fields:
+          - name: country
+            label: Land (zweistelliger Code)
+            type: string
+            required: true
+          - name: when_de
+            label: Wann (Deutsch)
+            type: string
+            description: "z. B. Januar 2027 oder Datum offen"
+          - name: when_en
+            label: Wann (Englisch)
+            type: string
       - name: planned_countries
         label: Geplante Länder (zweistelliger Code)
         type: string
