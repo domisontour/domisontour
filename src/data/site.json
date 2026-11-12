@@ -58,9 +58,10 @@
       "icon": "car"
     }
   ],
-  "photo_oreo": "",
+  "photo_oreo": "/uploads/portfolio/oreo.jpg",
   "email": "info@domisontour.ch",
   "email_collab": "collab@domisontour.ch",
   "instagram_ugc": "https://www.instagram.com/ugc.domisontour/",
-  "tiktok": "https://www.tiktok.com/@domisontour"
+  "tiktok": "https://www.tiktok.com/@domisontour",
+  "photo_frou": "/uploads/portfolio/frou-domi-portrait.jpg"
 }

@@ -150,7 +150,32 @@
       "caption_en": "Balcony"
     }
   ],
-  "drone": [],
+  "drone": [
+    {
+      "video": "/uploads/portfolio/drohne-2.mp4",
+      "poster": "/uploads/portfolio/drohne-2.jpg",
+      "label_de": "Wellen von oben",
+      "label_en": "Waves from above"
+    },
+    {
+      "video": "/uploads/portfolio/drohne-3.mp4",
+      "poster": "/uploads/portfolio/drohne-3.jpg",
+      "label_de": "Wir zwei am Strand",
+      "label_en": "The two of us on the beach"
+    },
+    {
+      "video": "/uploads/portfolio/drohne-4.mp4",
+      "poster": "/uploads/portfolio/drohne-4.jpg",
+      "label_de": "Brandung & Felsen",
+      "label_en": "Surf & rocks"
+    },
+    {
+      "video": "/uploads/portfolio/drohne-1.mp4",
+      "poster": "/uploads/portfolio/drohne-1.jpg",
+      "label_de": "Lagune & Küste",
+      "label_en": "Lagoon & coast"
+    }
+  ],
   "currency": "CHF",
   "prices": [
     {
