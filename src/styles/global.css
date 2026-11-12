@@ -2,13 +2,14 @@
 @import '@fontsource/libre-caslon-text/400.css';
 @import '@fontsource/libre-caslon-text/700.css';
 
-/* Schreibschrift im Stil der Logo-Zeile „live a life you will remember“, gut lesbar */
+/* Akzentschrift (Ersatz für die Canva-Schrift „Pierson“): Italiana, fein und elegant */
 @font-face {
-  font-family: 'Domi Script';
-  src: url('@fontsource/allura/files/allura-latin-400-normal.woff2') format('woff2');
+  font-family: 'Domi Accent';
+  src: url('@fontsource/italiana/files/italiana-latin-400-normal.woff2') format('woff2');
   font-weight: 400;
   font-display: swap;
-  size-adjust: 112%;
+  /* etwas kleiner, damit die bisherigen Grössen der Schreibschrift passen */
+  size-adjust: 80%;
 }
 
 :root {
@@ -27,7 +28,7 @@
 
   --font: 'Figtree Variable', system-ui, sans-serif;
   --serif: 'Libre Caslon Text', Georgia, serif;
-  --hand: 'Domi Script', 'Snell Roundhand', cursive;
+  --hand: 'Domi Accent', 'Didot', Georgia, serif;
 
   --shadow: 0 1px 2px rgba(45, 35, 25, 0.06), 0 10px 26px -8px rgba(45, 35, 25, 0.18);
   --radius: 14px;
@@ -68,7 +69,9 @@ p { margin: 0 0 1em; }
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
 .measure { max-width: 64ch; }
 .lead { font-size: 1.2rem; color: var(--ink-soft); max-width: 52ch; }
-.hand { font-family: var(--hand); font-weight: 400; letter-spacing: 0; line-height: 1.1; }
+.hand { font-family: var(--hand); font-weight: 400; letter-spacing: 0.02em; line-height: 1.15; }
+/* Akzentzeilen stehen gerade (die Serifenschrift wirkt schräg unruhig) */
+.hand.kicker { transform: none !important; }
 .muted { color: var(--ink-soft); }
 
 .section { padding-block: clamp(56px, 9vw, 104px); }
