@@ -4,6 +4,7 @@ import { path, t, type Lang } from '../lib/i18n';
 import { site } from '../lib/content';
 import Logo from '../components/Logo.astro';
 import { destinationsByContinent } from '../lib/destinations';
+import { portfolioSections } from '../lib/portfolio';
 
 interface Props {
   lang: Lang;
@@ -12,7 +13,7 @@ interface Props {
   /** Gleiche Seite in der anderen Sprache */
   alt: string;
   image?: string;
-  active?: 'map' | 'trips' | 'diary' | 'about' | 'dest' | 'collab';
+  active?: 'map' | 'trips' | 'diary' | 'about' | 'dest' | 'collab' | 'portfolio';
 }
 
 const { lang, title, description, alt, image, active } = Astro.props;
@@ -34,7 +35,7 @@ const jsonLd = {
     '@type': 'Organization',
     name: "Domi's on Tour",
     logo: new URL('/logo-domis-on-tour.jpg', Astro.site).toString(),
-    sameAs: [site.instagram, (site as any).tiktok, (site as any).youtube].filter(Boolean),
+    sameAs: [site.instagram, (site as any).instagram_ugc, (site as any).tiktok, (site as any).youtube].filter(Boolean),
   },
 };
 
@@ -43,8 +44,9 @@ const nav = [
   { key: 'map', href: path('map', lang), label: tr.nav_map },
   { key: 'diary', href: path('diary', lang), label: tr.nav_diary },
   { key: 'about', href: path('about', lang), label: tr.nav_about },
-  { key: 'collab', href: path('collab', lang), label: tr.nav_collab },
 ] as const;
+const pfGroups = portfolioSections(lang);
+const pfBase = path('portfolio', lang);
 ---
 <!doctype html>
 <html lang={lang}>
@@ -79,7 +81,7 @@ const nav = [
         <a class="brand" href={path('home', lang)} aria-label="Domis on Tour">
           <Logo />
         </a>
-        <nav class="nav" aria-label="Hauptnavigation">
+        <nav class="nav" aria-label={lang === 'de' ? 'Hauptnavigation' : 'Main navigation'}>
           <ul>
             <li class="mega-li">
               <a href={path('dest', lang)} class="mega-trigger" aria-current={active === 'dest' || active === 'trips' ? 'page' : undefined}>{tr.nav_trips}</a>
@@ -90,6 +92,13 @@ const nav = [
             {nav.map((n) => (
               <li><a href={n.href} aria-current={active === n.key ? 'page' : undefined}>{n.label}</a></li>
             ))}
+            <li class="mega-li">
+              <a href={pfBase} class="mega-trigger" aria-current={active === 'portfolio' ? 'page' : undefined}>{tr.nav_portfolio}</a>
+              <button type="button" class="mega-btn" aria-expanded="false" aria-controls="mega-pf" aria-label={tr.pf_open_menu}>
+                <svg viewBox="0 0 12 8" width="10" height="7" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+              </button>
+            </li>
+            <li><a href={path('collab', lang)} aria-current={active === 'collab' ? 'page' : undefined}>{tr.nav_collab}</a></li>
           </ul>
         </nav>
         <div class="lang" role="group" aria-label={tr.switch_label}>
@@ -115,6 +124,24 @@ const nav = [
           </div>
         </div>
       </div>
+      <div id="mega-pf" class="mega" hidden>
+        <div class="wrap mega-in">
+          <div class="mega-grid">
+            {pfGroups.map((g) => (
+              <div class="mega-col">
+                <p class="mega-h">{g.name}</p>
+                <ul class="chips">
+                  {g.items.map((it) => <li><a class="chip" href={`${pfBase}#${it.id}`}>{it.label}</a></li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div class="mega-foot">
+            <a class="btn" href={pfBase}>{lang === 'de' ? 'Ganzes Portfolio ansehen' : 'View full portfolio'}</a>
+            <a class="btn ghost" href={`${pfBase}#contact`}>{lang === 'de' ? 'Anfrage senden' : 'Send a request'}</a>
+          </div>
+        </div>
+      </div>
     </header>
 
     <main id="main">
@@ -128,6 +155,7 @@ const nav = [
         </div>
         <div class="foot-links">
           {site.instagram && <a href={site.instagram} rel="me noopener" target="_blank">Instagram</a>}
+          {(site as any).instagram_ugc && <a href={(site as any).instagram_ugc} rel="me noopener" target="_blank">Instagram UGC</a>}
           {site.tiktok && <a href={site.tiktok} rel="me noopener" target="_blank">TikTok</a>}
           {site.youtube && <a href={site.youtube} rel="me noopener" target="_blank">YouTube</a>}
           {site.rednote && <a href={site.rednote} rel="me noopener" target="_blank">RedNote</a>}
@@ -135,6 +163,7 @@ const nav = [
           {(site as any).email_collab && <a href={`mailto:${(site as any).email_collab}`}>{lang === 'de' ? 'Kooperationen' : 'Collaborations'}: {(site as any).email_collab}</a>}
         </div>
         <div class="foot-legal">
+          <a href={path('portfolio', lang)}>{tr.nav_portfolio}</a>
           <a href={path('collab', lang)}>{tr.nav_collab}</a>
           <a href={path('imprint', lang)}>{tr.imprint}</a>
           <a href={path('privacy', lang)}>{tr.privacy}</a>
@@ -153,26 +182,36 @@ const nav = [
         navEl.addEventListener('scroll', upd, { passive: true });
         upd();
       }
-      // Reiseziel-Menü: öffnet beim Drüberfahren (Computer) oder Antippen des Pfeils (Handy)
-      const btn = document.querySelector<HTMLButtonElement>('.mega-btn');
-      const panel = document.getElementById('mega');
-      const li = document.querySelector<HTMLElement>('.mega-li');
-      if (btn && panel && li) {
+      // Dropdown-Menüs (Reisen, Portfolio): öffnen beim Drüberfahren (Computer) oder Antippen des Pfeils (Handy)
+      const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      const menus: { set: (o: boolean) => void; panel: HTMLElement; li: HTMLElement; btn: HTMLButtonElement }[] = [];
+      document.querySelectorAll<HTMLElement>('.mega-li').forEach((li) => {
+        const btn = li.querySelector<HTMLButtonElement>('.mega-btn');
+        const panel = btn ? document.getElementById(btn.getAttribute('aria-controls') || '') : null;
+        if (!btn || !panel) return;
         let timer: number | undefined;
         const set = (open: boolean) => {
+          if (open) menus.forEach((m) => { if (m.panel !== panel) m.set(false); });
           panel.hidden = !open;
           btn.setAttribute('aria-expanded', String(open));
         };
+        menus.push({ set, panel, li, btn });
         btn.addEventListener('click', () => set(panel.hidden));
-        const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
         if (canHover) {
           const open = () => { clearTimeout(timer); set(true); };
           const close = () => { clearTimeout(timer); timer = window.setTimeout(() => set(false), 180); };
           [li, panel].forEach((el) => { el.addEventListener('mouseenter', open); el.addEventListener('mouseleave', close); });
         }
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) { set(false); btn.focus(); } });
-        document.addEventListener('click', (e) => { if (!panel.hidden && !panel.contains(e.target as Node) && !li.contains(e.target as Node)) set(false); });
-      }
+        // Klick auf einen Abschnitt derselben Seite: Menü schliessen
+        panel.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)));
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        menus.forEach((m) => { if (!m.panel.hidden) { m.set(false); m.btn.focus(); } });
+      });
+      document.addEventListener('click', (e) => {
+        menus.forEach((m) => { if (!m.panel.hidden && !m.panel.contains(e.target as Node) && !m.li.contains(e.target as Node)) m.set(false); });
+      });
     </script>
   </body>
 </html>

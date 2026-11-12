@@ -59,6 +59,7 @@ const steps = de
       <p class="lead">{lead}</p>
       <div class="ctas">
         <a class="btn" href={mailto}><Icon name="mail" size={18} />{de ? 'Anfrage senden' : 'Send a request'}</a>
+        <a class="btn ghost" href={path('portfolio', lang)}>{de ? 'Portfolio ansehen' : 'View portfolio'}</a>
         {c.mediakit && <a class="btn ghost" href={c.mediakit} target="_blank" rel="noopener">{de ? 'Mediakit (PDF)' : 'Media kit (PDF)'}</a>}
       </div>
       <p class="mail-line">{email}</p>

@@ -11,10 +11,13 @@ const WIDTHS = [480, 960, 1600];
 fs.mkdirSync(OUT, { recursive: true });
 
 const manifest = {};
-const files = fs.existsSync(SRC) ? fs.readdirSync(SRC).filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f)) : [];
+// auch Unterordner (z. B. uploads/portfolio)
+const files = fs.existsSync(SRC)
+  ? fs.readdirSync(SRC, { recursive: true }).map((f) => String(f).split(path.sep).join('/')).filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f))
+  : [];
 for (const file of files) {
   const input = path.join(SRC, file);
-  const base = file.replace(/\.[^.]+$/, '');
+  const base = file.replace(/\.[^.]+$/, '').replace(/\//g, '__');
   const img = sharp(input).rotate();
   const meta = await img.metadata();
   // Ausrichtung (EXIF) berücksichtigen

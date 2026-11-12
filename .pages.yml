@@ -3,7 +3,7 @@ media:
   input: public/uploads
   output: /uploads
   rename: safe
-  categories: [image]
+  categories: [image, video]
 
 content:
   # ---------------- Tagebuch ----------------
@@ -460,6 +460,9 @@ content:
       - name: instagram
         label: Instagram-Link
         type: string
+      - name: instagram_ugc
+        label: Instagram-Link UGC-Konto
+        type: string
       - name: tiktok
         label: TikTok-Link
         type: string
@@ -675,3 +678,318 @@ content:
         type: file
         options:
           categories: [document]
+
+  # ---------------- Portfolio (UGC) ----------------
+  - name: portfolio
+    label: Portfolio (UGC für Brands)
+    type: file
+    path: src/data/portfolio.json
+    format: json
+    fields:
+      - name: kicker_de
+        label: Zeile über dem Namen (Deutsch)
+        type: string
+      - name: kicker_en
+        label: Zeile über dem Namen (Englisch)
+        type: string
+      - name: name
+        label: Name
+        type: string
+      - name: claim_de
+        label: Slogan (Deutsch)
+        type: string
+      - name: claim_en
+        label: Slogan (Englisch)
+        type: string
+      - name: tags_de
+        label: Stichworte (Deutsch)
+        type: string
+        list: true
+      - name: tags_en
+        label: Stichworte (Englisch)
+        type: string
+        list: true
+      - name: location_de
+        label: Ort (Deutsch)
+        type: string
+      - name: location_en
+        label: Ort (Englisch)
+        type: string
+      - name: hero
+        label: Fotos oben (2 Polaroids)
+        type: object
+        list:
+          max: 2
+          collapsible:
+            collapsed: true
+            summary: "{fields.caption_de}"
+        fields:
+          - name: image
+            label: Foto
+            type: image
+            required: true
+          - name: caption_de
+            label: Text auf dem Polaroid (Deutsch)
+            type: string
+          - name: caption_en
+            label: Text auf dem Polaroid (Englisch)
+            type: string
+      - name: intro_title_de
+        label: "Titel „Warum mit uns“ (Deutsch)"
+        type: string
+      - name: intro_title_en
+        label: "Titel „Warum mit uns“ (Englisch)"
+        type: string
+      - name: intro_de
+        label: "Text „Warum mit uns“ (Deutsch)"
+        type: rich-text
+        options:
+          format: markdown
+      - name: intro_en
+        label: "Text „Warum mit uns“ (Englisch)"
+        type: rich-text
+        options:
+          format: markdown
+      - name: intro_video
+        label: "Video neben „Warum mit uns“"
+        type: object
+        fields:
+          - name: video
+            label: Video (MP4, Hochformat)
+            type: file
+            required: true
+            options:
+              categories: [video]
+          - name: poster
+            label: Vorschaubild
+            type: image
+          - name: caption_de
+            label: Bildtext (Deutsch)
+            type: string
+          - name: caption_en
+            label: Bildtext (Englisch)
+            type: string
+      - name: intro_images
+        label: "Fotos neben „Warum mit uns“ (max. 2)"
+        type: object
+        list:
+          max: 2
+          collapsible:
+            collapsed: true
+            summary: "{fields.caption_de}"
+        fields:
+          - name: image
+            label: Foto
+            type: image
+            required: true
+          - name: caption_de
+            label: Bildtext (Deutsch)
+            type: string
+          - name: caption_en
+            label: Bildtext (Englisch)
+            type: string
+      - name: perspectives_title_de
+        label: Titel Perspektiven (Deutsch)
+        type: string
+      - name: perspectives_title_en
+        label: Titel Perspektiven (Englisch)
+        type: string
+      - name: perspectives
+        label: Drei Perspektiven (plus Oreo)
+        type: object
+        description: "Ohne Foto beim Oreo-Eintrag wird das Oreo-Foto aus „Über uns und Links“ verwendet."
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.title_de}"
+        fields:
+          - name: title_de
+            label: Titel (Deutsch)
+            type: string
+            required: true
+          - name: title_en
+            label: Titel (Englisch)
+            type: string
+          - name: text_de
+            label: Text (Deutsch)
+            type: text
+          - name: text_en
+            label: Text (Englisch)
+            type: text
+          - name: image
+            label: Foto
+            type: image
+      - name: videos
+        label: UGC-Videos
+        type: object
+        description: "Reihenfolge per Ziehen ändern. Neue Videos am besten zuerst Claude schicken: Er verkleinert sie für die Website und lädt sie hoch. Hier könnt ihr Reihenfolge und Beschriftung ändern."
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.who} · {fields.label_de}"
+        fields:
+          - name: video
+            label: Video (MP4, Hochformat)
+            type: file
+            required: true
+            options:
+              categories: [video]
+          - name: poster
+            label: Vorschaubild
+            type: image
+          - name: who
+            label: Wer ist zu sehen (für den Filter)
+            type: select
+            options:
+              values: [herr, frou, couple]
+          - name: label_de
+            label: Beschriftung (Deutsch)
+            type: string
+            description: z. B. Travel · Rucksack
+          - name: label_en
+            label: Beschriftung (Englisch)
+            type: string
+      - name: photos
+        label: UGC-Fotos
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.caption_de}"
+        fields:
+          - name: image
+            label: Foto
+            type: image
+            required: true
+          - name: caption_de
+            label: Bildtext (Deutsch)
+            type: string
+          - name: caption_en
+            label: Bildtext (Englisch)
+            type: string
+      - name: locations_de
+        label: Dreh-Locations Text (Deutsch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: locations_en
+        label: Dreh-Locations Text (Englisch)
+        type: rich-text
+        options:
+          format: markdown
+      - name: locations
+        label: Dreh-Locations Fotos
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.caption_de}"
+        fields:
+          - name: image
+            label: Foto
+            type: image
+            required: true
+          - name: caption_de
+            label: Bildtext (Deutsch)
+            type: string
+          - name: caption_en
+            label: Bildtext (Englisch)
+            type: string
+      - name: drone
+        label: Drohnenaufnahmen (Videos)
+        type: object
+        description: "Leer = Abschnitt wird nicht angezeigt."
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.label_de}"
+        fields:
+          - name: video
+            label: Video (MP4, Hochformat)
+            type: file
+            required: true
+            options:
+              categories: [video]
+          - name: poster
+            label: Vorschaubild
+            type: image
+          - name: label_de
+            label: Beschriftung (Deutsch)
+            type: string
+          - name: label_en
+            label: Beschriftung (Englisch)
+            type: string
+      - name: currency
+        label: Währung
+        type: string
+        description: z. B. CHF
+      - name: prices
+        label: Pakete & Preise
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.title_de}"
+        fields:
+          - name: title_de
+            label: Paket (Deutsch)
+            type: string
+            required: true
+          - name: title_en
+            label: Paket (Englisch)
+            type: string
+          - name: rows
+            label: Preise
+            type: object
+            list: true
+            fields:
+              - name: label_de
+                label: Umfang (Deutsch)
+                type: string
+              - name: label_en
+                label: Umfang (Englisch)
+                type: string
+              - name: price_de
+                label: Preis (Deutsch, ohne Währung)
+                type: string
+                description: z. B. 150 bis 180 oder ab 200
+              - name: price_en
+                label: Preis (Englisch, ohne Währung)
+                type: string
+      - name: prices_note_de
+        label: Hinweis unter den Preisen (Deutsch)
+        type: text
+      - name: prices_note_en
+        label: Hinweis unter den Preisen (Englisch)
+        type: text
+      - name: cta_title_de
+        label: Kontakt Titel (Deutsch)
+        type: string
+      - name: cta_title_en
+        label: Kontakt Titel (Englisch)
+        type: string
+      - name: cta_text_de
+        label: Kontakt Text (Deutsch)
+        type: text
+      - name: cta_text_en
+        label: Kontakt Text (Englisch)
+        type: text
+      - name: cta_images
+        label: Fotos beim Kontakt (max. 2)
+        type: object
+        list:
+          max: 2
+          collapsible:
+            collapsed: true
+            summary: "{fields.caption_de}"
+        fields:
+          - name: image
+            label: Foto
+            type: image
+            required: true
+          - name: caption_de
+            label: Bildtext (Deutsch)
+            type: string
+          - name: caption_en
+            label: Bildtext (Englisch)
+            type: string

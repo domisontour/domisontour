@@ -1,9 +1,9 @@
 # Imprint
 
-**Domis on Tour**
-Dominique Flückiger and Dominique Winkler
-[Street and no.]
-[Postcode Town]
+**Domis on Tour**  
+Dominique Flückiger and Dominique Winkler  
+Bantigerstrasse 4  
+3052 Zollikofen  
 Switzerland
 
 Email: [info@domisontour.ch](mailto:info@domisontour.ch)  

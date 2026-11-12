@@ -1,0 +1,223 @@
+{
+  "kicker_de": "UGC Creators · Schweiz",
+  "kicker_en": "UGC creators · Switzerland",
+  "name": "Dominique & Dominique",
+  "claim_de": "Zwei Creators. Drei Möglichkeiten.",
+  "claim_en": "Two creators. Three possibilities.",
+  "tags_de": [
+    "Solo Content",
+    "Couple Content",
+    "UGC für Brands"
+  ],
+  "tags_en": [
+    "Solo content",
+    "Couple content",
+    "UGC for brands"
+  ],
+  "location_de": "Bern, Schweiz",
+  "location_en": "Bern, Switzerland",
+  "hero": [
+    {
+      "image": "/uploads/portfolio/couple-schlucht.jpg",
+      "caption_de": "Garden Route",
+      "caption_en": "Garden Route"
+    },
+    {
+      "image": "/uploads/portfolio/couple-garten.jpg",
+      "caption_de": "Herr & Frou Domi",
+      "caption_en": "Herr & Frou Domi"
+    }
+  ],
+  "intro_title_de": "Warum mit uns?",
+  "intro_title_en": "Why work with us?",
+  "intro_de": "Wir sind ein Schweizer Reisepaar aus der Region Bern. Für eure Marke produzieren wir authentische UGC-Videos auf Hochdeutsch, Schweizerdeutsch und bei Bedarf auf Englisch. Wir testen eure Produkte unterwegs und im Alltag und zeigen, wie wir sie in echten Situationen nutzen.\n\nJedes Video liefern wir mit mehreren Hooks sowie im Hoch- und Querformat. So könnt ihr die Inhalte auf verschiedenen Kanälen einsetzen und mit A/B-Tests herausfinden, welche Einstiege für eure Ads am besten funktionieren.",
+  "intro_en": "We are a Swiss travel couple from the Bern area. For your brand we produce authentic UGC videos in German, Swiss German and, if needed, English. We test your products on the road and in everyday life and show how we really use them.\n\nEvery video comes with several hooks and in both vertical and horizontal format. That way you can use the content across channels and run A/B tests to find out which openings work best for your ads.",
+  "intro_video": {
+    "video": "/uploads/portfolio/ugc-vorstellung.mp4",
+    "poster": "/uploads/portfolio/ugc-vorstellung.jpg",
+    "caption_de": "Unser Vorstellungsvideo",
+    "caption_en": "Our intro video"
+  },
+  "intro_images": [
+    {
+      "image": "/uploads/portfolio/herr-domi-portrait.jpg",
+      "caption_de": "Herr Domi",
+      "caption_en": "Herr Domi"
+    },
+    {
+      "image": "/uploads/portfolio/frou-domi-sofa.jpg",
+      "caption_de": "Frou Domi",
+      "caption_en": "Frou Domi"
+    }
+  ],
+  "perspectives_title_de": "Ein Dreh, drei Perspektiven",
+  "perspectives_title_en": "One shoot, three perspectives",
+  "perspectives": [
+    {
+      "title_de": "Couple",
+      "title_en": "Couple",
+      "text_de": "Wir beide zusammen für Hotels, Reisen und Travel Gear.",
+      "text_en": "The two of us together for hotels, travel and travel gear.",
+      "image": "/uploads/portfolio/couple-garten.jpg"
+    },
+    {
+      "title_de": "Frou Domi",
+      "title_en": "Frou Domi",
+      "text_de": "Beauty, Interior, Food und Travel. Pflege und Make-up für zu Hause und unterwegs.",
+      "text_en": "Beauty, interior, food and travel. Skincare and make-up at home and on the go.",
+      "image": "/uploads/portfolio/frou-domi-portrait.jpg"
+    },
+    {
+      "title_de": "Herr Domi",
+      "title_en": "Herr Domi",
+      "text_de": "Technik, Gadgets, Drohne, Padel und Travel. Kameras, Reise-Tech und Apps.",
+      "text_en": "Tech, gadgets, drone, padel and travel. Cameras, travel tech and apps.",
+      "image": "/uploads/portfolio/herr-domi-safari.jpg"
+    },
+    {
+      "title_de": "+ Oreo testet mit",
+      "title_en": "+ Oreo tests too",
+      "text_de": "Katzenprodukte testen wir mit unserer Katze Oreo. Ihre Reaktion ist echt.",
+      "text_en": "We test cat products with our cat Oreo. Her reaction is real.",
+      "image": ""
+    }
+  ],
+  "videos": [
+    {
+      "video": "/uploads/portfolio/ugc-rucksack.mp4",
+      "poster": "/uploads/portfolio/ugc-rucksack.jpg",
+      "who": "herr",
+      "label_de": "Travel · Rucksack",
+      "label_en": "Travel · Backpack"
+    },
+    {
+      "video": "/uploads/portfolio/ugc-fotobuch.mp4",
+      "poster": "/uploads/portfolio/ugc-fotobuch.jpg",
+      "who": "frou",
+      "label_de": "Travel · Fotobuch-App",
+      "label_en": "Travel · Photo book app"
+    },
+    {
+      "video": "/uploads/portfolio/ugc-body-lotion.mp4",
+      "poster": "/uploads/portfolio/ugc-body-lotion.jpg",
+      "who": "frou",
+      "label_de": "Beauty · Body Lotion",
+      "label_en": "Beauty · Body lotion"
+    },
+    {
+      "video": "/uploads/portfolio/ugc-travel-organizer.mp4",
+      "poster": "/uploads/portfolio/ugc-travel-organizer.jpg",
+      "who": "couple",
+      "label_de": "Travel · Organizer",
+      "label_en": "Travel · Organizer"
+    },
+    {
+      "video": "/uploads/portfolio/ugc-packing-cubes.mp4",
+      "poster": "/uploads/portfolio/ugc-packing-cubes.jpg",
+      "who": "herr",
+      "label_de": "Travel · Packing Cubes",
+      "label_en": "Travel · Packing cubes"
+    }
+  ],
+  "photos": [
+    {
+      "image": "/uploads/portfolio/ugc-foto-parfum.jpg",
+      "caption_de": "Body Mist",
+      "caption_en": "Body mist"
+    },
+    {
+      "image": "/uploads/portfolio/ugc-foto-creme.jpg",
+      "caption_de": "Body Lotion",
+      "caption_en": "Body lotion"
+    },
+    {
+      "image": "/uploads/portfolio/ugc-foto-rasierer.jpg",
+      "caption_de": "Bartpflege",
+      "caption_en": "Beard care"
+    }
+  ],
+  "locations_de": "**Zu Hause:** Wohnzimmer, Küche, Balkon\n\n**Unterwegs:** Hotels, Städte und Natur auf unseren Reisen",
+  "locations_en": "**At home:** living room, kitchen, balcony\n\n**On the road:** hotels, cities and nature on our travels",
+  "locations": [
+    {
+      "image": "/uploads/portfolio/location-wohnzimmer.jpg",
+      "caption_de": "Wohnzimmer",
+      "caption_en": "Living room"
+    },
+    {
+      "image": "/uploads/portfolio/location-balkon.jpg",
+      "caption_de": "Balkon",
+      "caption_en": "Balcony"
+    }
+  ],
+  "drone": [],
+  "currency": "CHF",
+  "prices": [
+    {
+      "title_de": "Organic Content",
+      "title_en": "Organic content",
+      "rows": [
+        {
+          "label_de": "1 Video",
+          "label_en": "1 video",
+          "price_de": "150 bis 180",
+          "price_en": "150 to 180"
+        },
+        {
+          "label_de": "3 Videos",
+          "label_en": "3 videos",
+          "price_de": "330 bis 500",
+          "price_en": "330 to 500"
+        },
+        {
+          "label_de": "5 Videos",
+          "label_en": "5 videos",
+          "price_de": "600 bis 880",
+          "price_en": "600 to 880"
+        }
+      ]
+    },
+    {
+      "title_de": "Paid Ads",
+      "title_en": "Paid ads",
+      "rows": [
+        {
+          "label_de": "1 Video",
+          "label_en": "1 video",
+          "price_de": "ab 200",
+          "price_en": "from 200"
+        },
+        {
+          "label_de": "3 Videos",
+          "label_en": "3 videos",
+          "price_de": "ab 500",
+          "price_en": "from 500"
+        },
+        {
+          "label_de": "5 Videos",
+          "label_en": "5 videos",
+          "price_de": "ab 880",
+          "price_en": "from 880"
+        }
+      ]
+    }
+  ],
+  "prices_note_de": "Jedes Video liefern wir mit mehreren Hooks sowie im Hoch- und Querformat.",
+  "prices_note_en": "Every video comes with several hooks and in vertical and horizontal format.",
+  "cta_title_de": "Lust auf ein Projekt?",
+  "cta_title_en": "Fancy a project together?",
+  "cta_text_de": "Schreibt uns. Wir sind als Paar oder einzeln buchbar.",
+  "cta_text_en": "Drop us a line. You can book us as a couple or individually.",
+  "cta_images": [
+    {
+      "image": "/uploads/portfolio/herr-domi-safari.jpg",
+      "caption_de": "Safari",
+      "caption_en": "Safari"
+    },
+    {
+      "image": "/uploads/portfolio/frou-domi-garten.jpg",
+      "caption_de": "Frou Domi",
+      "caption_en": "Frou Domi"
+    }
+  ]
+}

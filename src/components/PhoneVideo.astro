@@ -1,0 +1,64 @@
+---
+// Video im Handyrahmen: zeigt zuerst nur das Vorschaubild, lädt das Video erst beim Antippen
+import { imageInfo } from '../lib/images';
+interface Props {
+  video: string;
+  poster?: string;
+  label: string;
+  /** Text für Screenreader beim Abspielknopf */
+  playLabel: string;
+  who?: string;
+}
+const { video, poster, label, playLabel, who } = Astro.props;
+// Vorschaubild in schlanker Grösse
+const info = poster ? imageInfo(poster) : null;
+const posterSrc = info ? (info.variants.find((v) => v.w >= 480) ?? info.variants.at(-1))!.src : poster;
+---
+<figure class="pv" data-who={who}>
+  <div class="frame">
+    <video src={video} poster={posterSrc} preload="none" playsinline width="720" height="1280" aria-label={label}></video>
+    <button type="button" class="play" aria-label={`${playLabel}: ${label}`}>
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" /></svg>
+    </button>
+  </div>
+  <figcaption>{label}</figcaption>
+</figure>
+
+<style>
+  .pv { margin: 0; min-width: 0; }
+  .frame {
+    position: relative; aspect-ratio: 9 / 16; border-radius: 22px; overflow: hidden;
+    border: 7px solid var(--linen); background: #ddd3c8; box-shadow: var(--shadow);
+  }
+  /* angedeutete Kamera-Insel wie bei einem Handy */
+  .frame::before { content: ''; position: absolute; z-index: 2; top: 6px; left: 50%; width: 30%; height: 8px; border-radius: 6px; background: var(--linen); transform: translateX(-50%); pointer-events: none; transition: opacity 0.2s; }
+  .pv.playing .frame::before { opacity: 0; }
+  video { width: 100%; height: 100%; object-fit: cover; display: block; background: #2d2d2d; }
+  .play {
+    position: absolute; inset: 0; margin: auto; width: 60px; height: 60px; border-radius: 50%;
+    border: 0; cursor: pointer; background: rgba(45, 45, 45, 0.62); color: #fff;
+    display: grid; place-items: center; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    transition: transform 0.15s, background 0.15s;
+  }
+  .play svg { margin-left: 3px; }
+  .play:hover { transform: scale(1.06); background: rgba(45, 45, 45, 0.78); }
+  .pv.playing .play { display: none; }
+  figcaption { margin-top: 10px; text-align: center; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+</style>
+
+<script>
+  // Nur ein Video gleichzeitig: startet eines, pausieren alle anderen
+  const all = () => Array.from(document.querySelectorAll<HTMLVideoElement>('.pv video'));
+  document.querySelectorAll<HTMLElement>('.pv').forEach((fig) => {
+    const v = fig.querySelector('video')!;
+    const btn = fig.querySelector<HTMLButtonElement>('.play')!;
+    btn.addEventListener('click', () => {
+      all().forEach((o) => { if (o !== v) o.pause(); });
+      fig.classList.add('playing');
+      v.controls = true;
+      v.play().catch(() => {});
+      v.focus();
+    });
+    v.addEventListener('play', () => all().forEach((o) => { if (o !== v) o.pause(); }));
+  });
+</script>

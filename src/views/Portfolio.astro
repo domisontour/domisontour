@@ -1,0 +1,335 @@
+---
+// UGC-Portfolio (Aufbau wie die Canva-Seite, im Look der Website)
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import Gallery from '../components/Gallery.astro';
+import PhoneVideo from '../components/PhoneVideo.astro';
+import Icon from '../components/Icon.astro';
+import { site, md } from '../lib/content';
+import { path, type Lang } from '../lib/i18n';
+import { portfolio as p, pp } from '../lib/portfolio';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const other: Lang = lang === 'de' ? 'en' : 'de';
+const de = lang === 'de';
+const s = site as any;
+
+const email = s.email_collab || s.email || 'collab@domisontour.ch';
+const mailto = `mailto:${email}?subject=${encodeURIComponent(de ? "Anfrage UGC Domi's on Tour" : "UGC request Domi's on Tour")}`;
+const list = (x: any) => ((x ?? []) as any[]);
+const hero = list(p.hero).filter((x) => x?.image).slice(0, 2);
+const introImgs = list(p.intro_images).filter((x) => x?.image).slice(0, 2);
+const persp = list(p.perspectives).filter((x) => x?.title_de);
+const videos = list(p.videos).filter((x) => x?.video);
+const photos = list(p.photos).filter((x) => x?.image);
+const locations = list(p.locations).filter((x) => x?.image);
+const drone = list(p.drone).filter((x) => x?.video);
+const prices = list(p.prices).filter((x) => x?.title_de);
+const ctaImgs = list(p.cta_images).filter((x) => x?.image).slice(0, 2);
+const tags = list(de ? p.tags_de : p.tags_en || p.tags_de);
+const playLabel = de ? 'Video abspielen' : 'Play video';
+
+const whoNames: Record<string, string> = { herr: 'Herr Domi', frou: 'Frou Domi', couple: 'Couple' };
+const whoKeys = ['herr', 'frou', 'couple'].filter((k) => videos.some((v) => v.who === k));
+const vLabel = (v: any) => [whoNames[v.who], pp(v, 'label', lang)].filter(Boolean).join(' · ');
+
+const channels = [
+  s.instagram_ugc && { name: s.instagram_ugc.replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, ''), url: s.instagram_ugc, icon: 'instagram' },
+  s.tiktok && { name: s.tiktok.replace(/^https?:\/\/(www\.)?tiktok\.com\/@?/, '').replace(/\/$/, ''), url: s.tiktok, icon: 'tiktok' },
+].filter(Boolean) as { name: string; url: string; icon: string }[];
+
+const title = 'Portfolio';
+const desc = `${p.name}: ${pp(p, 'claim', lang)} ${tags.join(' · ')}`;
+---
+<Base lang={lang} title={title} description={desc} alt={path('portfolio', other)} active="portfolio" image={hero[0]?.image}>
+  <!-- Hero -->
+  <section class="wrap hero">
+    <div class="hero-text">
+      <p class="hand kicker">{pp(p, 'kicker', lang)}</p>
+      <h1>{p.name}</h1>
+      <p class="claim">{pp(p, 'claim', lang)}</p>
+      {tags.length > 0 && <ul class="tags">{tags.map((t) => <li>{t}</li>)}</ul>}
+      <ul class="contact">
+        <li><a href={mailto}><Icon name="mail" size={18} />{email}</a></li>
+        <li><span><Icon name="pin" size={18} />{pp(p, 'location', lang)}</span></li>
+        {channels.map((c) => <li><a href={c.url} target="_blank" rel="me noopener"><Icon name={c.icon} size={18} />{c.name}</a></li>)}
+      </ul>
+    </div>
+    {hero.length > 0 && (
+      <div class="pair" aria-hidden="true">
+        {hero.map((h, i) => (
+          <figure class={`polaroid p${i}`}>
+            <div class="ph"><Photo src={h.image} alt="" eager={i === 0} sizes="(max-width: 860px) 55vw, 320px" /></div>
+            <figcaption>{pp(h, 'caption', lang)}</figcaption>
+          </figure>
+        ))}
+      </div>
+    )}
+  </section>
+
+  <!-- Warum mit uns -->
+  <section id="about" class="band">
+    <div class="wrap section about">
+      {p.intro_video?.video && (
+        <div class="intro-video">
+          <PhoneVideo video={p.intro_video.video} poster={p.intro_video.poster} label={pp(p.intro_video, 'caption', lang)} playLabel={playLabel} />
+        </div>
+      )}
+      <div class="intro-text">
+        <h2>{pp(p, 'intro_title', lang)}</h2>
+        <div class="prose" set:html={md(pp(p, 'intro', lang))} />
+      </div>
+      {introImgs.length > 0 && (
+        <div class="intro-pics">
+          {introImgs.map((im, i) => (
+            <figure class={`polaroid t${i}`}>
+              <div class="ph"><Photo src={im.image} alt={pp(im, 'caption', lang)} sizes="(max-width: 860px) 40vw, 220px" /></div>
+              <figcaption>{pp(im, 'caption', lang)}</figcaption>
+            </figure>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Drei Perspektiven -->
+  {persp.length > 0 && (
+    <section id="perspectives" class="wrap section">
+      <h2 class="center">{pp(p, 'perspectives_title', lang)}</h2>
+      <ul class="persp">
+        {persp.map((x, i) => (
+          <li class="polaroid" style={`--tilt:${[-1.6, 1.2, -0.8, 1.8][i % 4]}deg`}>
+            <div class="ph"><Photo src={x.image || (x.title_de.includes('Oreo') ? s.photo_oreo : '')} alt={pp(x, 'title', lang)} label="Oreo" tone={i} sizes="(max-width: 760px) 45vw, 260px" /></div>
+            <h3 class="cap">{pp(x, 'title', lang)}</h3>
+            <p>{pp(x, 'text', lang)}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <!-- UGC-Videos -->
+  {videos.length > 0 && (
+    <section id="videos" class="band">
+      <div class="wrap section">
+        <div class="section-head">
+          <h2>{de ? 'UGC-Videos' : 'UGC videos'}</h2>
+          {whoKeys.length > 1 && (
+            <div class="filter" role="group" aria-label={de ? 'Videos filtern' : 'Filter videos'}>
+              <button type="button" data-f="all" aria-pressed="true">{de ? 'Alle' : 'All'}</button>
+              {whoKeys.map((k) => <button type="button" data-f={k} aria-pressed="false">{whoNames[k]}</button>)}
+            </div>
+          )}
+        </div>
+        <div class="phones">
+          {videos.map((v) => <PhoneVideo video={v.video} poster={v.poster} label={vLabel(v)} who={v.who} playLabel={playLabel} />)}
+        </div>
+        <p class="hint">{de ? 'Mit Ton ansehen: Video antippen.' : 'Tap a video to watch it with sound.'}</p>
+      </div>
+    </section>
+  )}
+
+  <!-- UGC-Fotos -->
+  {photos.length > 0 && (
+    <section id="photos" class="wrap section">
+      <h2>{de ? 'UGC-Fotos' : 'UGC photos'}</h2>
+      <Gallery photos={photos} lang={lang} />
+    </section>
+  )}
+
+  <!-- Dreh-Locations -->
+  {(locations.length > 0 || p.locations_de) && (
+    <section id="locations" class="band">
+      <div class="wrap section locs">
+        <div>
+          <h2>{de ? 'Dreh-Locations' : 'Filming locations'}</h2>
+          <div class="prose" set:html={md(pp(p, 'locations', lang))} />
+        </div>
+        <div class="loc-pics">
+          {locations.map((l, i) => (
+            <figure class={`polaroid l${i % 3}`}>
+              <div class="ph"><Photo src={l.image} alt={pp(l, 'caption', lang)} sizes="(max-width: 760px) 45vw, 300px" /></div>
+              <figcaption>{pp(l, 'caption', lang)}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Drohne -->
+  {drone.length > 0 && (
+    <section id="drone" class="wrap section">
+      <h2>{de ? 'Drohnenaufnahmen' : 'Drone footage'}</h2>
+      <div class="phones">
+        {drone.map((v) => <PhoneVideo video={v.video} poster={v.poster} label={pp(v, 'label', lang) || (de ? 'Drohne' : 'Drone')} playLabel={playLabel} />)}
+      </div>
+    </section>
+  )}
+
+  <!-- Pakete & Preise -->
+  {prices.length > 0 && (
+    <section id="prices" class={drone.length > 0 ? 'band' : undefined}>
+      <div class="wrap section">
+        <h2>{de ? 'Pakete & Preise' : 'Packages & prices'}</h2>
+        <div class="prices">
+          {prices.map((pk) => (
+            <div class="price">
+              <h3>{pp(pk, 'title', lang)}</h3>
+              <dl>
+                {list(pk.rows).map((r) => (
+                  <div><dt>{pp(r, 'label', lang)}</dt><dd>{p.currency || 'CHF'} {pp(r, 'price', lang)}</dd></div>
+                ))}
+              </dl>
+            </div>
+          ))}
+        </div>
+        {pp(p, 'prices_note', lang) && <p class="note-line">{pp(p, 'prices_note', lang)}</p>}
+      </div>
+    </section>
+  )}
+
+  <!-- Kontakt -->
+  <section id="contact" class="wrap section contact-sec">
+    {ctaImgs.length > 0 && (
+      <div class="pair small" aria-hidden="true">
+        {ctaImgs.map((h, i) => (
+          <figure class={`polaroid p${i}`}>
+            <div class="ph"><Photo src={h.image} alt="" sizes="(max-width: 860px) 45vw, 260px" /></div>
+            <figcaption>{pp(h, 'caption', lang)}</figcaption>
+          </figure>
+        ))}
+      </div>
+    )}
+    <div class="cta">
+      <h2>{pp(p, 'cta_title', lang)}</h2>
+      <p>{pp(p, 'cta_text', lang)}</p>
+      <a class="btn" href={mailto}><Icon name="mail" size={18} />{email}</a>
+      {channels.length > 0 && (
+        <ul class="channels">
+          {channels.map((c) => <li><a href={c.url} target="_blank" rel="me noopener"><Icon name={c.icon} size={18} />{c.name}</a></li>)}
+        </ul>
+      )}
+      <p class="small"><a href={path('collab', lang)}>{de ? 'Mehr zur Zusammenarbeit' : 'More about working with us'}</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .band { background: #e5ddd5; }
+  .center { text-align: center; }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(28px, 5vw, 72px); align-items: center; padding-top: clamp(36px, 6vw, 80px); padding-bottom: clamp(48px, 7vw, 88px); }
+  .kicker { font-size: 2rem; color: var(--gold-deep); margin: 0 0 4px; transform: rotate(-2deg); transform-origin: left; }
+  .hero h1 { margin-bottom: 0.2em; }
+  .claim { font-family: var(--serif); font-size: clamp(1.2rem, 2.2vw, 1.5rem); color: var(--ink-soft); margin-bottom: 18px; }
+  .tags { list-style: none; margin: 0 0 22px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .tags li { background: var(--linen); border-radius: 999px; padding: 6px 14px; font-size: 0.9rem; font-weight: 600; box-shadow: var(--shadow); }
+  .contact { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .contact a, .contact span { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: var(--ink); text-decoration: none; font-weight: 550; }
+  .contact a:hover { color: var(--gold-deep); text-decoration: underline; }
+  .contact :global(svg) { color: var(--gold-deep); flex: none; }
+  .pair { position: relative; height: clamp(360px, 40vw, 500px); }
+  .pair .polaroid { position: absolute; width: 56%; margin: 0; }
+  .pair .ph { aspect-ratio: 3 / 4; }
+  .pair .p0 { right: 3%; top: 0; transform: rotate(3deg); z-index: 2; }
+  .pair .p1 { left: 0; bottom: 0; transform: rotate(-4.5deg); z-index: 1; }
+
+  /* Warum mit uns */
+  .about { display: grid; grid-template-columns: 220px minmax(0, 1fr) 230px; gap: clamp(24px, 4vw, 56px); align-items: center; }
+  .intro-pics, .loc-pics { min-width: 0; }
+  .intro-pics figure, .loc-pics figure { margin: 0; }
+  .intro-pics { display: grid; gap: 18px; }
+  .intro-pics .ph { aspect-ratio: 4 / 5; }
+  .intro-pics figcaption { font-size: 1.4rem; white-space: nowrap; }
+  .intro-pics .t0 { transform: rotate(2deg); }
+  .intro-pics .t1 { transform: rotate(-2deg); }
+
+  /* Perspektiven */
+  .persp { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(18px, 3vw, 32px); }
+  .persp li { transform: rotate(var(--tilt)); padding-bottom: 14px; }
+  .persp .ph { aspect-ratio: 1; }
+  .persp h3.cap { font-weight: 400; margin: 0; padding-bottom: 4px; }
+  .persp p { margin: 0; padding: 0 8px; text-align: center; font-size: 0.95rem; color: var(--ink-soft); line-height: 1.45; }
+
+  /* Videos */
+  .section-head h2 { margin: 0; }
+  .filter { display: flex; flex-wrap: wrap; gap: 8px; }
+  .filter button { min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); font: 600 0.95rem var(--font); cursor: pointer; }
+  .filter button:hover { background: rgba(45, 45, 45, 0.06); }
+  .filter button[aria-pressed='true'] { background: var(--ink); color: var(--linen); }
+  .phones { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: clamp(16px, 2.4vw, 28px); }
+  .phones :global(.pv[hidden]) { display: none; }
+  .hint { margin: 22px 0 0; text-align: center; color: var(--ink-soft); font-size: 0.95rem; }
+
+  /* Locations */
+  .locs { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 64px); align-items: center; }
+  .loc-pics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+  .loc-pics .ph { aspect-ratio: 3 / 4; }
+  .loc-pics .l0 { transform: rotate(-2deg); }
+  .loc-pics .l1 { transform: rotate(2deg) translateY(18px); }
+  .loc-pics .l2 { transform: rotate(-1deg); }
+
+  /* Preise */
+  .prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; margin-top: 24px; }
+  .price { background: var(--linen); border-radius: var(--radius); padding: 24px 26px 14px; box-shadow: var(--shadow); border-top: 3px solid var(--gold); }
+  .price h3 { font-size: 1.4rem; margin-bottom: 8px; }
+  .price dl { margin: 0; }
+  .price dl div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px dashed var(--line); }
+  .price dt { color: var(--ink-soft); }
+  .price dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+  .note-line { margin: 20px 0 0; color: var(--ink-soft); }
+
+  /* Kontakt */
+  .contact-sec { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(28px, 5vw, 64px); align-items: center; }
+  .pair.small { height: clamp(320px, 34vw, 420px); }
+  .pair.small .ph { aspect-ratio: 1; }
+  .cta { background: var(--linen); border-radius: 28px; padding: clamp(28px, 5vw, 52px); text-align: center; box-shadow: var(--shadow); border-top: 3px solid var(--gold); }
+  .cta p { color: var(--ink-soft); }
+  .cta .btn { margin: 6px 0 14px; }
+  .channels { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; }
+  .channels a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--ink); text-decoration: none; font-weight: 600; }
+  .channels a:hover { color: var(--gold-deep); }
+  .cta .small { margin: 0; font-size: 0.95rem; }
+  .cta .small a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+
+  @media (max-width: 960px) {
+    .about { grid-template-columns: 200px minmax(0, 1fr); }
+    .intro-pics { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 220px)); justify-content: center; }
+    .persp { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 860px) {
+    .hero, .locs, .contact-sec { grid-template-columns: 1fr; }
+    .pair { max-width: 440px; width: 100%; margin: 8px auto 0; height: 380px; }
+    .pair.small { height: 330px; }
+  }
+  @media (max-width: 620px) {
+    .about { grid-template-columns: 1fr; }
+    .intro-video { max-width: 240px; margin: 0 auto; width: 100%; }
+    .intro-pics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .persp p { font-size: 0.88rem; }
+  }
+</style>
+
+<script>
+  // Videos nach Person filtern
+  document.querySelectorAll<HTMLElement>('.filter').forEach((bar) => {
+    const grid = bar.closest('section')?.querySelector('.phones');
+    if (!grid) return;
+    const btns = Array.from(bar.querySelectorAll<HTMLButtonElement>('button'));
+    btns.forEach((b) =>
+      b.addEventListener('click', () => {
+        const f = b.dataset.f;
+        btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        grid.querySelectorAll<HTMLElement>('.pv').forEach((pv) => {
+          const show = f === 'all' || pv.dataset.who === f;
+          pv.hidden = !show;
+          if (!show) pv.querySelector('video')?.pause();
+        });
+      }),
+    );
+  });
+</script>
