@@ -179,7 +179,13 @@ const desc = `${p.name}: ${pp(p, 'claim', lang)} ${tags.join(' · ')}`;
               <h3>{pp(pk, 'title', lang)}</h3>
               <dl>
                 {list(pk.rows).map((r) => (
-                  <div><dt>{pp(r, 'label', lang)}</dt><dd>{p.currency || 'CHF'} {pp(r, 'price', lang)}</dd></div>
+                  <div><dt>{pp(r, 'label', lang)}</dt><dd>{(() => {
+                    // «ab 180» → «ab CHF 180.–», sonst «CHF 150 bis 180»
+                    const cur = p.currency || 'CHF';
+                    const pr = pp(r, 'price', lang);
+                    const m = pr.match(/^(ab|from)\s+(\d+)$/);
+                    return m ? `${m[1]} ${cur} ${m[2]}.–` : `${cur} ${pr}`;
+                  })()}</dd></div>
                 ))}
               </dl>
             </div>

@@ -30,8 +30,8 @@
   ],
   "intro_title_de": "Warum mit uns?",
   "intro_title_en": "Why work with us?",
-  "intro_de": "Wir sind ein Schweizer Reisepaar aus der Region Bern. Für eure Marke produzieren wir authentische UGC-Videos auf Hochdeutsch, Schweizerdeutsch und bei Bedarf auf Englisch. Wir testen eure Produkte unterwegs und im Alltag und zeigen, wie wir sie in echten Situationen nutzen.\n\nJedes Video liefern wir mit mehreren Hooks sowie im Hoch- und Querformat. So könnt ihr die Inhalte auf verschiedenen Kanälen einsetzen und mit A/B-Tests herausfinden, welche Einstiege für eure Ads am besten funktionieren.",
-  "intro_en": "We are a Swiss travel couple from the Bern area. For your brand we produce authentic UGC videos in German, Swiss German and, if needed, English. We test your products on the road and in everyday life and show how we really use them.\n\nEvery video comes with several hooks and in both vertical and horizontal format. That way you can use the content across channels and run A/B tests to find out which openings work best for your ads.",
+  "intro_de": "Wir sind ein Schweizer Reisepaar aus der Region Bern. Für eure Marke produzieren wir authentische UGC-Videos auf Hochdeutsch, Schweizerdeutsch und bei Bedarf auf Englisch. Wir testen eure Produkte unterwegs und im Alltag und zeigen, wie wir sie in echten Situationen nutzen.\n\nJedes Video liefern wir im Hochformat für Reels, TikTok und Stories, mit zwei zusätzlichen Hooks. So könnt ihr mit A/B-Tests herausfinden, welche Einstiege für eure Ads am besten funktionieren.",
+  "intro_en": "We are a Swiss travel couple from the Bern area. For your brand we produce authentic UGC videos in German, Swiss German and, if needed, English. We test your products on the road and in everyday life and show how we really use them.\n\nEvery video comes in vertical format for Reels, TikTok and Stories, with two additional hooks. That way you can run A/B tests to find out which openings work best for your ads.",
   "intro_video": {
     "video": "/uploads/portfolio/ugc-vorstellung.mp4",
     "poster": "/uploads/portfolio/ugc-vorstellung.jpg",
@@ -185,20 +185,26 @@
         {
           "label_de": "1 Video",
           "label_en": "1 video",
-          "price_de": "150 bis 180",
-          "price_en": "150 to 180"
+          "price_de": "ab 180",
+          "price_en": "from 180"
         },
         {
           "label_de": "3 Videos",
           "label_en": "3 videos",
-          "price_de": "330 bis 500",
-          "price_en": "330 to 500"
+          "price_de": "ab 490",
+          "price_en": "from 490"
         },
         {
           "label_de": "5 Videos",
           "label_en": "5 videos",
-          "price_de": "600 bis 880",
-          "price_en": "600 to 880"
+          "price_de": "ab 750",
+          "price_en": "from 750"
+        },
+        {
+          "label_de": "3 in 1 Couple-Paket",
+          "label_en": "3-in-1 couple package",
+          "price_de": "ab 450",
+          "price_en": "from 450"
         }
       ]
     },
@@ -209,30 +215,36 @@
         {
           "label_de": "1 Video",
           "label_en": "1 video",
-          "price_de": "ab 200",
-          "price_en": "from 200"
+          "price_de": "ab 230",
+          "price_en": "from 230"
         },
         {
           "label_de": "3 Videos",
           "label_en": "3 videos",
-          "price_de": "ab 500",
-          "price_en": "from 500"
+          "price_de": "ab 640",
+          "price_en": "from 640"
         },
         {
           "label_de": "5 Videos",
           "label_en": "5 videos",
-          "price_de": "ab 880",
-          "price_en": "from 880"
+          "price_de": "ab 980",
+          "price_en": "from 980"
+        },
+        {
+          "label_de": "3 in 1 Couple-Paket",
+          "label_en": "3-in-1 couple package",
+          "price_de": "ab 590",
+          "price_en": "from 590"
         }
       ]
     }
   ],
-  "prices_note_de": "Jedes Video liefern wir mit mehreren Hooks sowie im Hoch- und Querformat.",
-  "prices_note_en": "Every video comes with several hooks and in vertical and horizontal format.",
+  "prices_note_de": "In jedem Paket inklusive: Konzeption & Skript, Dreh & Schnitt, 1–2 Revisionen pro Video, 2 zusätzliche Hooks, Hochformat 9:16. Das Couple-Paket enthält 3 Videos zu einem Produkt: als Paar, mit Frou Domi und mit Herr Domi. Paid Ads inklusive Nutzungsrechte für 3 Monate. Extras: Rohmaterial +30 %, Express unter 5 Tagen +25 %, weitere Formate auf Anfrage.",
+  "prices_note_en": "Included in every package: concept & script, filming & editing, 1–2 revisions per video, 2 additional hooks, vertical 9:16 format. The couple package includes 3 videos for one product: as a couple, with Frou Domi and with Herr Domi. Paid ads include usage rights for 3 months. Extras: raw footage +30 %, express delivery under 5 days +25 %, other formats on request.",
   "cta_title_de": "Lust auf ein Projekt?",
   "cta_title_en": "Fancy a project together?",
-  "cta_text_de": "Schreibt uns. Wir sind als Paar oder einzeln buchbar.",
-  "cta_text_en": "Drop us a line. You can book us as a couple or individually.",
+  "cta_text_de": "Wir erstellen authentischen UGC-Content für eure Zielgruppe, als Paar oder einzeln. Erzählt uns von eurem Produkt, wir melden uns persönlich bei euch.",
+  "cta_text_en": "We create authentic UGC content for your target audience, as a couple or individually. Tell us about your product and we will get back to you personally.",
   "cta_images": [
     {
       "image": "/uploads/portfolio/herr-domi-safari.jpg",
