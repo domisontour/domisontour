@@ -3,14 +3,15 @@ export const langs: Lang[] = ['de', 'en'];
 
 /** Seiten und ihre Pfade pro Sprache */
 const routes = {
-  home: { de: '/', en: '/en/' },
+  gate: { de: '/', en: '/en/' },
+  home: { de: '/travel/', en: '/en/travel/' },
   map: { de: '/karte/', en: '/en/map/' },
   trips: { de: '/reisen/', en: '/en/trips/' },
   dest: { de: '/reiseziele/', en: '/en/destinations/' },
   diary: { de: '/tagebuch/', en: '/en/diary/' },
   about: { de: '/ueber-uns/', en: '/en/about/' },
   collab: { de: '/zusammenarbeit/', en: '/en/work-with-us/' },
-  portfolio: { de: '/portfolio/', en: '/en/portfolio/' },
+  portfolio: { de: '/ugc/', en: '/en/ugc/' },
   imprint: { de: '/impressum/', en: '/en/imprint/' },
   privacy: { de: '/datenschutz/', en: '/en/privacy/' },
 } as const;

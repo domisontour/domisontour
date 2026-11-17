@@ -993,3 +993,91 @@ content:
           - name: caption_en
             label: Bildtext (Englisch)
             type: string
+
+  # ---------------- Startseite (Weiche Travel / UGC) ----------------
+  - name: gate
+    label: Startseite (Weiche Travel / UGC)
+    type: file
+    path: src/data/gate.json
+    format: json
+    fields:
+      - name: intro_de
+        label: Satz unter den zwei Hälften (Deutsch)
+        type: text
+      - name: intro_en
+        label: Satz unter den zwei Hälften (Englisch)
+        type: text
+      - name: travel
+        label: "Linke Hälfte: Travel"
+        type: object
+        fields:
+          - name: kicker_de
+            label: Kleine Zeile oben (Deutsch)
+            type: string
+          - name: kicker_en
+            label: Kleine Zeile oben (Englisch)
+            type: string
+          - name: title_de
+            label: Titel (Deutsch)
+            type: string
+          - name: title_en
+            label: Titel (Englisch)
+            type: string
+          - name: text_de
+            label: Text (Deutsch)
+            type: text
+          - name: text_en
+            label: Text (Englisch)
+            type: text
+          - name: button_de
+            label: Button (Deutsch)
+            type: string
+          - name: button_en
+            label: Button (Englisch)
+            type: string
+          - name: image
+            label: Bild (wird gezeigt, bis das Video lädt, oder statt Video)
+            type: image
+          - name: video
+            label: Hintergrundvideo (kurz, ohne Ton, optional)
+            type: file
+            description: "Am besten 6 bis 10 Sekunden. Längere Videos zuerst Claude schicken, er kürzt und verkleinert sie."
+            options:
+              categories: [video]
+      - name: ugc
+        label: "Rechte Hälfte: UGC"
+        type: object
+        fields:
+          - name: kicker_de
+            label: Kleine Zeile oben (Deutsch)
+            type: string
+          - name: kicker_en
+            label: Kleine Zeile oben (Englisch)
+            type: string
+          - name: title_de
+            label: Titel (Deutsch)
+            type: string
+          - name: title_en
+            label: Titel (Englisch)
+            type: string
+          - name: text_de
+            label: Text (Deutsch)
+            type: text
+          - name: text_en
+            label: Text (Englisch)
+            type: text
+          - name: button_de
+            label: Button (Deutsch)
+            type: string
+          - name: button_en
+            label: Button (Englisch)
+            type: string
+          - name: image
+            label: Bild (wird gezeigt, bis das Video lädt, oder statt Video)
+            type: image
+          - name: video
+            label: Hintergrundvideo (kurz, ohne Ton, optional)
+            type: file
+            description: "Am besten 6 bis 10 Sekunden. Längere Videos zuerst Claude schicken, er kürzt und verkleinert sie."
+            options:
+              categories: [video]

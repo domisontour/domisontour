@@ -1,0 +1,28 @@
+{
+  "intro_de": "Zweimal Dominique aus Bern: Wir reisen um die Welt und produzieren authentische UGC-Videos für Brands.",
+  "intro_en": "Two Dominiques from Bern: we travel the world and create authentic UGC videos for brands.",
+  "travel": {
+    "kicker_de": "Domis on Tour · Travel",
+    "kicker_en": "Domis on Tour · Travel",
+    "title_de": "Reisen",
+    "title_en": "Travel",
+    "text_de": "Routen, Weltkarte, Tagebuch und Tipps aus unseren Reisen.",
+    "text_en": "Routes, world map, diary and tips from our travels.",
+    "button_de": "Zu den Reisen",
+    "button_en": "Explore our trips",
+    "image": "/uploads/startseite/travel-teaser.jpg",
+    "video": "/uploads/startseite/travel-teaser.mp4"
+  },
+  "ugc": {
+    "kicker_de": "Domis on Tour · UGC",
+    "kicker_en": "Domis on Tour · UGC",
+    "title_de": "Für Brands",
+    "title_en": "For brands",
+    "text_de": "Authentische UGC-Videos aus der Schweiz, solo oder als Paar.",
+    "text_en": "Authentic UGC videos from Switzerland, solo or as a couple.",
+    "button_de": "Zum Portfolio",
+    "button_en": "View portfolio",
+    "image": "/uploads/portfolio/couple-garten.jpg",
+    "video": ""
+  }
+}

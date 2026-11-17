@@ -14,9 +14,13 @@ interface Props {
   alt: string;
   image?: string;
   active?: 'map' | 'trips' | 'diary' | 'about' | 'dest' | 'collab' | 'portfolio';
+  /** Welt der Seite: Travel, UGC oder die Startseite (Weiche) */
+  world?: 'travel' | 'ugc' | 'gate';
 }
 
 const { lang, title, description, alt, image, active } = Astro.props;
+const world = Astro.props.world ?? (active === 'portfolio' || active === 'collab' ? 'ugc' : 'travel');
+const de = lang === 'de';
 const tr = t(lang);
 const other: Lang = lang === 'de' ? 'en' : 'de';
 const fullTitle = title ? `${title} | Domis on Tour` : 'Domis on Tour | Schweizer Reisepaar';
@@ -45,8 +49,21 @@ const nav = [
   { key: 'diary', href: path('diary', lang), label: tr.nav_diary },
   { key: 'about', href: path('about', lang), label: tr.nav_about },
 ] as const;
-const pfGroups = portfolioSections(lang);
 const pfBase = path('portfolio', lang);
+// Menü der UGC-Welt: Abschnitte der UGC-Seite (nur vorhandene) plus Zusammenarbeit
+const pfIds = new Set(portfolioSections(lang).flatMap((g) => g.items.map((i) => i.id)));
+const ugcNav = [
+  { id: 'about', label: de ? 'Wer wir sind' : 'Who we are' },
+  { id: 'videos', label: 'Videos' },
+  { id: 'photos', label: de ? 'Fotos' : 'Photos' },
+  { id: 'prices', label: de ? 'Preise' : 'Prices' },
+  { id: 'collab', label: tr.nav_collab, href: path('collab', lang) },
+  { id: 'contact', label: de ? 'Kontakt' : 'Contact' },
+].filter((n) => n.href || pfIds.has(n.id));
+const homeHref = world === 'ugc' ? pfBase : world === 'gate' ? path('gate', lang) : path('home', lang);
+const switchTo = world === 'travel'
+  ? { href: pfBase, label: de ? 'Für Brands' : 'For brands' }
+  : world === 'ugc' ? { href: path('home', lang), label: 'Travel' } : null;
 ---
 <!doctype html>
 <html lang={lang}>
@@ -78,35 +95,50 @@ const pfBase = path('portfolio', lang);
     <a class="skip" href="#main">{tr.skip}</a>
     <header class="site-header">
       <div class="wrap bar">
-        <a class="brand" href={path('home', lang)} aria-label="Domis on Tour">
+        <a class="brand" href={homeHref} aria-label={world === 'ugc' ? 'Domis on Tour UGC' : 'Domis on Tour'}>
           <Logo />
+          {world === 'ugc' && <span class="world-tag">UGC</span>}
         </a>
-        <nav class="nav" aria-label={lang === 'de' ? 'Hauptnavigation' : 'Main navigation'}>
-          <ul>
-            <li class="mega-li">
-              <a href={path('dest', lang)} class="mega-trigger" aria-current={active === 'dest' || active === 'trips' ? 'page' : undefined}>{tr.nav_trips}</a>
-              <button type="button" class="mega-btn" aria-expanded="false" aria-controls="mega" aria-label={tr.dest_open_menu}>
-                <svg viewBox="0 0 12 8" width="10" height="7" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
-              </button>
-            </li>
-            {nav.map((n) => (
-              <li><a href={n.href} aria-current={active === n.key ? 'page' : undefined}>{n.label}</a></li>
-            ))}
-            <li class="mega-li">
-              <a href={pfBase} class="mega-trigger" aria-current={active === 'portfolio' ? 'page' : undefined}>{tr.nav_portfolio}</a>
-              <button type="button" class="mega-btn" aria-expanded="false" aria-controls="mega-pf" aria-label={tr.pf_open_menu}>
-                <svg viewBox="0 0 12 8" width="10" height="7" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
-              </button>
-            </li>
-            <li><a href={path('collab', lang)} aria-current={active === 'collab' ? 'page' : undefined}>{tr.nav_collab}</a></li>
-          </ul>
-        </nav>
+        {world === 'travel' && (
+          <nav class="nav" aria-label={de ? 'Hauptnavigation' : 'Main navigation'}>
+            <ul>
+              {switchTo && <li class="switch-li"><a class="switch" href={switchTo.href}>{switchTo.label}</a></li>}
+              <li class="mega-li">
+                <a href={path('dest', lang)} class="mega-trigger" aria-current={active === 'dest' || active === 'trips' ? 'page' : undefined}>{tr.nav_trips}</a>
+                <button type="button" class="mega-btn" aria-expanded="false" aria-controls="mega" aria-label={tr.dest_open_menu}>
+                  <svg viewBox="0 0 12 8" width="10" height="7" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+                </button>
+              </li>
+              {nav.map((n) => (
+                <li><a href={n.href} aria-current={active === n.key ? 'page' : undefined}>{n.label}</a></li>
+              ))}
+            </ul>
+          </nav>
+        )}
+        {world === 'ugc' && (
+          <nav class="nav" aria-label={de ? 'Menü UGC' : 'UGC menu'}>
+            <ul>
+              {switchTo && <li class="switch-li"><a class="switch" href={switchTo.href}>{switchTo.label}</a></li>}
+              {ugcNav.map((n) => (
+                <li><a href={n.href ?? `${pfBase}#${n.id}`} aria-current={n.id === 'collab' && active === 'collab' ? 'page' : undefined}>{n.label}</a></li>
+              ))}
+            </ul>
+          </nav>
+        )}
+        <div class="tools">
+        {switchTo && (
+          <a class="switch top" href={switchTo.href}>
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 5h10M9 2l3 3-3 3M14 11H4M7 8l-3 3 3 3" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+            {switchTo.label}
+          </a>
+        )}
         <div class="lang" role="group" aria-label={tr.switch_label}>
           <a href={lang === 'de' ? Astro.url.pathname : alt} hreflang="de" lang="de" aria-current={lang === 'de' ? 'true' : undefined}>DE</a>
           <a href={lang === 'en' ? Astro.url.pathname : alt} hreflang="en" lang="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
         </div>
+        </div>
       </div>
-      <div id="mega" class="mega" hidden>
+      {world === 'travel' && <div id="mega" class="mega" hidden>
         <div class="wrap mega-in">
           <div class="mega-grid">
             {groups.map((g) => (
@@ -123,25 +155,7 @@ const pfBase = path('portfolio', lang);
             <a class="btn ghost" href={path('trips', lang)}>{tr.dest_trips_reports}</a>
           </div>
         </div>
-      </div>
-      <div id="mega-pf" class="mega" hidden>
-        <div class="wrap mega-in">
-          <div class="mega-grid">
-            {pfGroups.map((g) => (
-              <div class="mega-col">
-                <p class="mega-h">{g.name}</p>
-                <ul class="chips">
-                  {g.items.map((it) => <li><a class="chip" href={`${pfBase}#${it.id}`}>{it.label}</a></li>)}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <div class="mega-foot">
-            <a class="btn" href={pfBase}>{lang === 'de' ? 'Ganzes Portfolio ansehen' : 'View full portfolio'}</a>
-            <a class="btn ghost" href={`${pfBase}#contact`}>{lang === 'de' ? 'Anfrage senden' : 'Send a request'}</a>
-          </div>
-        </div>
-      </div>
+      </div>}
     </header>
 
     <main id="main">
@@ -163,7 +177,8 @@ const pfBase = path('portfolio', lang);
           {(site as any).email_collab && <a href={`mailto:${(site as any).email_collab}`}>{lang === 'de' ? 'Kooperationen' : 'Collaborations'}: {(site as any).email_collab}</a>}
         </div>
         <div class="foot-legal">
-          <a href={path('portfolio', lang)}>{tr.nav_portfolio}</a>
+          <a href={path('home', lang)}>Travel</a>
+          <a href={path('portfolio', lang)}>UGC Portfolio</a>
           <a href={path('collab', lang)}>{tr.nav_collab}</a>
           <a href={path('imprint', lang)}>{tr.imprint}</a>
           <a href={path('privacy', lang)}>{tr.privacy}</a>
@@ -251,6 +266,17 @@ const pfBase = path('portfolio', lang);
   .chip:hover, .chip:focus-visible { border-color: var(--gold); background: #f4efe9; }
   .mega-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
 
+  .brand { gap: 8px; }
+  .world-tag { font: 700 0.68rem var(--font); letter-spacing: 0.12em; color: var(--linen); background: var(--gold-deep); padding: 4px 8px; border-radius: 999px; }
+  .tools { display: inline-flex; align-items: center; gap: 10px; justify-self: end; }
+  .switch {
+    position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
+    background: var(--ink); color: var(--linen); text-decoration: none; font-size: 0.82rem; font-weight: 600; line-height: 1; white-space: nowrap;
+  }
+  .switch::after { content: ''; position: absolute; inset: -9px -2px; }
+  .switch:hover { background: #000; }
+  .nav .switch { color: var(--linen); border: 0; min-height: 0; padding: 7px 12px; }
+  .switch-li { display: none; }
   .lang { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; padding: 2px; }
   .lang a { position: relative; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-decoration: none; color: var(--ink); padding: 5px 10px; border-radius: 999px; line-height: 1; }
   /* unsichtbar vergrösserte Tippfläche (44px), Optik bleibt schlank */
@@ -265,6 +291,9 @@ const pfBase = path('portfolio', lang);
     .nav.at-end { -webkit-mask-image: none; mask-image: none; }
     .nav ul { justify-content: flex-start; gap: 20px; }
     .nav a { white-space: nowrap; }
+    /* Handy: Umschalter vorne in der Menüzeile statt oben */
+    .switch.top { display: none; }
+    .switch-li { display: list-item; list-style: none; }
   }
 
   .site-footer { border-top: 1px solid var(--line); padding: 48px 0 40px; margin-top: 40px; }

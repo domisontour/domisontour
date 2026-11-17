@@ -1,0 +1,93 @@
+---
+// Startseite als Weiche: links Travel, rechts UGC (Variante A „Zwei Hälften“)
+import Base from '../layouts/Base.astro';
+import { path, type Lang } from '../lib/i18n';
+import { imageInfo } from '../lib/images';
+import gate from '../data/gate.json';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const other: Lang = lang === 'de' ? 'en' : 'de';
+const de = lang === 'de';
+const g = gate as any;
+const tx = (o: any, k: string) => (!de && o?.[`${k}_en`]) || o?.[`${k}_de`] || '';
+const poster = (src: string) => {
+  const info = src ? imageInfo(src) : null;
+  return info ? (info.variants.find((v) => v.w >= 960) ?? info.variants.at(-1))!.src : src;
+};
+const sides = [
+  { key: 'travel', href: path('home', lang), d: g.travel },
+  { key: 'ugc', href: path('portfolio', lang), d: g.ugc },
+];
+const desc = tx(g, 'intro');
+---
+<Base lang={lang} alt={path('gate', other)} description={desc} world="gate">
+  <h1 class="sr">Domi's on Tour</h1>
+  <div class="split">
+    {sides.map((s) => (
+      <a class={`half ${s.key}`} href={s.href} data-world={s.key}>
+        {s.d.video ? (
+          <video class="bg" src={s.d.video} poster={poster(s.d.image)} muted loop playsinline autoplay preload="metadata" aria-hidden="true" tabindex="-1"></video>
+        ) : (
+          <img class="bg" src={poster(s.d.image)} alt="" />
+        )}
+        <span class="shade" aria-hidden="true"></span>
+        <span class="content">
+          <span class="kick">{tx(s.d, 'kicker')}</span>
+          <span class="title">{tx(s.d, 'title')}</span>
+          <span class="text">{tx(s.d, 'text')}</span>
+          <span class="go">{tx(s.d, 'button')}<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" /></svg></span>
+        </span>
+      </a>
+    ))}
+  </div>
+  <p class="intro wrap">{desc}</p>
+</Base>
+
+<style>
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .split { display: flex; height: clamp(460px, calc(100svh - 150px), 820px); background: #2d2d2d; }
+  .half {
+    position: relative; flex: 1 1 50%; overflow: hidden; display: flex; align-items: flex-end;
+    color: #fff; text-decoration: none; transition: flex-grow 0.5s ease;
+  }
+  .half:hover, .half:focus-visible { flex-grow: 1.35; }
+  .half:focus-visible { outline: 3px solid var(--gold); outline-offset: -6px; }
+  .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; transition: transform 1.2s ease; }
+  .half:hover .bg { transform: scale(1.04); }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20, 16, 12, 0) 40%, rgba(20, 16, 12, 0.72)); }
+  .ugc .shade { background: linear-gradient(180deg, rgba(20, 16, 12, 0.05) 30%, rgba(20, 16, 12, 0.78)); }
+  .content { position: relative; display: grid; gap: 8px; padding: clamp(22px, 4vw, 48px); max-width: 440px; }
+  .kick { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.92; }
+  .title { font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.05; }
+  .text { font-size: 1.05rem; line-height: 1.5; opacity: 0.94; max-width: 34ch; }
+  .go {
+    justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin-top: 8px;
+    min-height: 44px; padding: 0 20px; border-radius: 999px; background: var(--linen); color: var(--ink); font-weight: 600;
+    transition: gap 0.2s;
+  }
+  .half:hover .go { gap: 12px; }
+  /* feine goldene Trennlinie in der Mitte */
+  .travel::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 2px; background: var(--gold); opacity: 0.9; }
+  .intro { text-align: center; color: var(--ink-soft); font-size: 1.05rem; padding-block: 22px 8px; margin: 0 auto; max-width: 60ch; }
+
+  @media (max-width: 760px) {
+    .split { flex-direction: column; height: auto; }
+    .half { flex: none; height: clamp(300px, 44svh, 420px); }
+    .half:hover, .half:focus-visible { flex-grow: 0; }
+    .travel::after { top: auto; left: 0; width: auto; height: 2px; }
+    .content { padding: 22px 20px; }
+    .ugc .bg { object-position: 50% 12%; }
+    .title { font-size: 2.3rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .half, .bg, .go { transition: none; }
+  }
+</style>
+
+<script>
+  // Bei „Bewegung reduzieren“ keine laufenden Hintergrundvideos
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll<HTMLVideoElement>('.split video').forEach((v) => { v.removeAttribute('autoplay'); v.pause(); });
+  }
+</script>
