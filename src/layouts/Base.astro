@@ -23,7 +23,7 @@ const world = Astro.props.world ?? (active === 'portfolio' || active === 'collab
 const de = lang === 'de';
 const tr = t(lang);
 const other: Lang = lang === 'de' ? 'en' : 'de';
-const fullTitle = title ? `${title} | Domis on Tour` : 'Domis on Tour | Schweizer Reisepaar';
+const fullTitle = title ? `${title} | Domis on Tour` : `Domis on Tour | ${lang === 'de' ? 'Schweizer Reisepaar & UGC Creators' : 'Swiss travel couple & UGC creators'}`;
 const desc = description || tr.hero_lead;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const altUrl = new URL(alt, Astro.site);
@@ -192,7 +192,8 @@ const switchTo = world === 'travel'
       const navEl = document.querySelector<HTMLElement>('.nav');
       if (navEl) {
         const cur = navEl.querySelector<HTMLElement>('[aria-current="page"]');
-        if (cur && navEl.scrollWidth > navEl.clientWidth) navEl.scrollLeft = Math.max(0, cur.offsetLeft - 16);
+        const sw = navEl.querySelector<HTMLElement>('.switch-li')?.offsetWidth ?? 0;
+        if (cur && navEl.scrollWidth > navEl.clientWidth) navEl.scrollLeft = Math.max(0, cur.offsetLeft - 16 - sw);
         const upd = () => navEl.classList.toggle('at-end', navEl.scrollLeft + navEl.clientWidth >= navEl.scrollWidth - 4);
         navEl.addEventListener('scroll', upd, { passive: true });
         upd();
@@ -293,7 +294,8 @@ const switchTo = world === 'travel'
     .nav a { white-space: nowrap; }
     /* Handy: Umschalter vorne in der Menüzeile statt oben */
     .switch.top { display: none; }
-    .switch-li { display: list-item; list-style: none; }
+    /* bleibt beim seitlichen Wischen links stehen */
+    .switch-li { display: list-item; list-style: none; position: sticky; left: 0; z-index: 1; background: var(--sand); padding-right: 14px; box-shadow: 10px 0 10px -4px var(--sand); }
   }
 
   .site-footer { border-top: 1px solid var(--line); padding: 48px 0 40px; margin-top: 40px; }

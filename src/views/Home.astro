@@ -41,7 +41,7 @@ const groups = await destinationsByContinent(lang);
 const planned = await plannedByCountry(lang);
 const de = lang === 'de';
 ---
-<Base lang={lang} alt={path('home', other)}>
+<Base lang={lang} alt={path('home', other)} title={lang === 'de' ? 'Reisen' : 'Travel'}>
   <section class="hero wrap">
     <div class="hero-text">
       <img class="hero-logo" src="/logo.jpg" alt="Domi's on Tour – live a life you will remember" width="564" height="336" fetchpriority="high" />
