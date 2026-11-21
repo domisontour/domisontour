@@ -145,6 +145,26 @@
       "caption_en": "Living room"
     },
     {
+      "image": "/uploads/portfolio/location-esszimmer.jpg",
+      "caption_de": "Esszimmer",
+      "caption_en": "Dining room"
+    },
+    {
+      "image": "/uploads/portfolio/location-kueche.jpg",
+      "caption_de": "Küche",
+      "caption_en": "Kitchen"
+    },
+    {
+      "image": "/uploads/portfolio/location-wohn-essbereich.jpg",
+      "caption_de": "Essbereich",
+      "caption_en": "Dining area"
+    },
+    {
+      "image": "/uploads/portfolio/location-kochbereich.jpg",
+      "caption_de": "Kochbereich",
+      "caption_en": "Cooking area"
+    },
+    {
       "image": "/uploads/portfolio/location-balkon.jpg",
       "caption_de": "Balkon",
       "caption_en": "Balcony"
@@ -248,8 +268,8 @@
   "cta_images": [
     {
       "image": "/uploads/portfolio/herr-domi-safari.jpg",
-      "caption_de": "Safari",
-      "caption_en": "Safari"
+      "caption_de": "Herr Domi",
+      "caption_en": "Herr Domi"
     },
     {
       "image": "/uploads/portfolio/frou-domi-garten.jpg",

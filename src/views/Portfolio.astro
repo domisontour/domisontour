@@ -146,7 +146,7 @@ const desc = `${p.name}: ${pp(p, 'claim', lang)} ${tags.join(' · ')}`;
           <h2>{de ? 'Dreh-Locations' : 'Filming locations'}</h2>
           <div class="prose" set:html={md(pp(p, 'locations', lang))} />
         </div>
-        <div class="loc-pics">
+        <div class={`loc-pics${locations.length > 4 ? ' many' : ''}`}>
           {locations.map((l, i) => (
             <figure class={`polaroid l${i % 3}`}>
               <div class="ph"><Photo src={l.image} alt={pp(l, 'caption', lang)} sizes="(max-width: 760px) 45vw, 300px" /></div>
@@ -273,6 +273,7 @@ const desc = `${p.name}: ${pp(p, 'claim', lang)} ${tags.join(' · ')}`;
   /* Locations */
   .locs { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 64px); align-items: center; }
   .loc-pics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+  @media (min-width: 861px) { .loc-pics.many { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
   .loc-pics .ph { aspect-ratio: 3 / 4; }
   .loc-pics .l0 { transform: rotate(-2deg); }
   .loc-pics .l1 { transform: rotate(2deg) translateY(18px); }
