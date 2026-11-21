@@ -136,8 +136,8 @@
       "caption_en": "Beard care"
     }
   ],
-  "locations_de": "**Zu Hause:** Wohnzimmer, Küche, Balkon\n\n**Unterwegs:** Hotels, Städte und Natur auf unseren Reisen",
-  "locations_en": "**At home:** living room, kitchen, balcony\n\n**On the road:** hotels, cities and nature on our travels",
+  "locations_de": "**Zu Hause:** Wohnzimmer, Esszimmer, Küche, Balkon\n\n**Unterwegs:** Hotels, Städte und Natur auf unseren Reisen",
+  "locations_en": "**At home:** living room, dining room, kitchen, balcony\n\n**On the road:** hotels, cities and nature on our travels",
   "locations": [
     {
       "image": "/uploads/portfolio/location-wohnzimmer.jpg",
